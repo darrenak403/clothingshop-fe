@@ -1,204 +1,84 @@
-# Modern Full-Stack Architecture - Setup Guide
+# 🚀 ECOMMERCE FRONTEND - COMPLETE SETUP GUIDE
 
-Hướng dẫn setup kiến trúc hoàn chỉnh cho Next.js 16+ với Redux Toolkit, TanStack React Query, Tailwind CSS, Shadcn UI, Formik, và Animation libraries.
+Hướng dẫn setup từ đầu project Next.js 16 với Redux Toolkit, TanStack React Query, Tailwind CSS.
 
-## 📋 Mục Lục
-
-- [Thư Viện Cần Thiết](#thư-viện-cần-thiết)
-- [Cấu Trúc Thư Mục](#cấu-trúc-thư-mục)
-- [UI & Styling Setup](#ui--styling-setup)
-  - [Tailwind CSS Configuration](#tailwind-css-configuration)
-  - [Shadcn UI Integration](#shadcn-ui-integration)
-  - [Iconify Setup](#iconify-setup)
-- [Redux Toolkit Setup](#redux-toolkit-setup)
-  - [Store Configuration](#store-configuration)
-  - [Redux Persist](#redux-persist)
-  - [Creating Slices](#creating-slices)
-- [API Layer Architecture](#api-layer-architecture)
-  - [Core API Service](#core-api-service)
-  - [Service Layer Pattern](#service-layer-pattern)
-  - [React Query Integration](#react-query-integration)
-- [Form Management](#form-management)
-  - [Formik Setup](#formik-setup)
-  - [Yup Validation](#yup-validation)
-  - [Form Patterns](#form-patterns)
-- [Animation Setup](#animation-setup)
-  - [Framer Motion](#framer-motion)
-  - [GSAP Integration](#gsap-integration)
-- [Global Configuration](#global-configuration)
-- [Development Workflow](#development-workflow)
-- [Best Practices](#best-practices)
+**Áp dụng cho mọi project tương tự - Copy đúng code dưới đây!**
 
 ---
 
-## Thư Viện Cần Thiết
+## 📋 MỤC LỤC
 
-### 1. Cài đặt dependencies theo từng nhóm
+1. [Cài đặt Dependencies](#1-cài-đặt-dependencies)
+2. [Cấu hình môi trường](#2-cấu-hình-môi-trường)
+3. [Cấu trúc thư mục](#3-cấu-trúc-thư-mục)
+4. [File Types](#4-file-types)
+5. [API Service Core](#5-api-service-core)
+6. [Redux Store & Auth](#6-redux-store--auth)
+7. [Providers](#7-providers)
+8. [Layout & Globals](#8-layout--globals)
+9. [Middleware](#9-middleware)
+10. [Utils & Hooks](#10-utils--hooks)
+11. [File mẫu API Service](#11-file-mẫu-api-service)
+12. [Checklist cuối](#12-checklist-cuối)
 
-#### Core API & State Management
+---
+
+## 1. CÀI ĐẶT DEPENDENCIES
+
+### Bước 1: Cài đặt tất cả dependencies
 
 ```bash
-npm install axios @tanstack/react-query @reduxjs/toolkit react-redux redux-persist
-npm install cookies-next jwt-decode crypto-js bcryptjs dayjs
+# Core Framework
+npm install next@latest react@latest react-dom@latest typescript @types/react @types/node
+
+# State Management & Data Fetching
+npm install @reduxjs/toolkit react-redux redux-persist
+npm install @tanstack/react-query axios
 npm install -D @tanstack/react-query-devtools
-```
 
-#### UI Framework & Styling
-
-```bash
+# UI & Styling
 npm install tailwindcss postcss autoprefixer
-npm install @iconify/react
 npm install class-variance-authority clsx tailwind-merge
-npx tailwindcss init -p
+npm install @iconify/react
 
-# Shadcn UI (sau khi cấu hình Tailwind)
-npx shadcn@latest init
-```
-
-#### Form Management
-
-```bash
+# Forms & Validation
 npm install formik yup
 npm install -D @types/yup
-```
 
-#### Animation Libraries
-
-```bash
+# Animation
 npm install framer-motion gsap
-```
 
-#### Notifications & Utilities
-
-```bash
-npm install sonner js-cookie
+# Utilities
+npm install cookies-next jwt-decode dayjs sonner js-cookie
+npm install crypto-js bcryptjs
 npm install -D @types/js-cookie
 ```
 
-#### Quality Control (Optional - đã có)
+### Bước 2: Init Tailwind (nếu chưa có)
 
 ```bash
-npm install -D jest @testing-library/react @testing-library/jest-dom
-npm install -D prettier eslint-config-prettier
-npm install -D prettier-plugin-tailwindcss @trivago/prettier-plugin-sort-imports
-```
-
-### 2. Danh sách thư viện đầy đủ
-
-| Thư viện                         | Mục đích                          | Version  |
-| -------------------------------- | --------------------------------- | -------- |
-| **State Management**             |
-| `@reduxjs/toolkit`               | Global state management với Redux | ^2.5.0   |
-| `react-redux`                    | React bindings cho Redux          | ^9.2.0   |
-| `redux-persist`                  | Persist Redux state to storage    | ^6.0.0   |
-| **Server State & API**           |
-| `axios`                          | HTTP client cho API requests      | ^1.7.9   |
-| `@tanstack/react-query`          | Server state management & caching | ^5.87.1  |
-| `@tanstack/react-query-devtools` | Debug tools (dev only)            | ^5.87.3  |
-| **Forms & Validation**           |
-| `formik`                         | Form state management             | ^2.4.6   |
-| `yup`                            | Schema validation                 | ^1.5.0   |
-| **UI & Styling**                 |
-| `tailwindcss`                    | Utility-first CSS framework       | ^4.0.0   |
-| `@iconify/react`                 | Universal icon framework          | ^5.1.0   |
-| `class-variance-authority`       | CSS variants utility              | ^0.7.5   |
-| `clsx`                           | Conditional classnames            | ^2.1.1   |
-| `tailwind-merge`                 | Merge Tailwind classes            | ^2.6.0   |
-| **Animation**                    |
-| `framer-motion`                  | Production-ready motion library   | ^11.15.0 |
-| `gsap`                           | Professional-grade animation      | ^3.12.7  |
-| **Utilities**                    |
-| `cookies-next`                   | Cookie management for Next.js     | ^4.3.0   |
-| `js-cookie`                      | Simple cookie API                 | ^3.0.6   |
-| `jwt-decode`                     | Decode JWT tokens                 | ^4.0.0   |
-| `crypto-js`                      | Encryption library                | ^4.2.0   |
-| `bcryptjs`                       | Password hashing                  | ^2.4.3   |
-| `dayjs`                          | Date manipulation                 | ^1.11.13 |
-| `sonner`                         | Toast notifications               | ^1.5.0   |
-
----
-
-## Cấu Trúc Thư Mục
-
-```
-your-project/
-├── lib/
-│   ├── api/
-│   │   ├── core.ts              # Core Axios service
-│   │   └── services/            # API services
-│   │       ├── authService.ts
-│   │       ├── userService.ts
-│   │       └── productService.ts
-│   ├── redux/
-│   │   ├── store.ts             # Redux store configuration
-│   │   ├── hooks.ts             # Typed Redux hooks
-│   │   └── slices/              # Redux slices
-│   │       ├── authSlice.ts
-│   │       ├── uiSlice.ts
-│   │       └── cartSlice.ts
-│   ├── providers/
-│   │   ├── index.tsx            # Providers composition
-│   │   ├── reduxProvider.tsx    # Redux Provider
-│   │   └── queryProvider.tsx    # React Query setup
-│   ├── utils/
-│   │   ├── cn.ts                # Tailwind merge utility
-│   │   ├── validators.ts        # Yup schemas
-│   │   └── helpers.ts           # Common helpers
-│   └── constants/
-│       └── index.ts             # App constants
-├── hooks/
-│   ├── useAuth.ts               # Auth hooks
-│   ├── useUser.ts               # User query hooks
-│   ├── useProduct.ts            # Product query hooks
-│   └── useForm.ts               # Custom form hooks
-├── components/
-│   ├── ui/                      # Shadcn UI components
-│   │   ├── button.tsx
-│   │   ├── input.tsx
-│   │   ├── card.tsx
-│   │   └── ...
-│   ├── forms/                   # Form components
-│   │   ├── LoginForm.tsx
-│   │   └── ProductForm.tsx
-│   ├── animations/              # Animated components
-│   │   ├── PageTransition.tsx
-│   │   └── ScrollReveal.tsx
-│   └── layouts/                 # Layout components
-│       ├── Header.tsx
-│       └── Footer.tsx
-├── types/
-│   ├── api.ts                   # API response types
-│   ├── models.ts                # Data models
-│   └── forms.ts                 # Form types
-└── app/
-    ├── globals.css              # Global styles + Tailwind
-    ├── layout.tsx               # Root layout với providers
-    └── ...                      # Pages
-
-```
-
----
-
----
-
-## UI & Styling Setup
-
-### Tailwind CSS Configuration
-
-#### 1. Cài đặt Tailwind CSS 4
-
-```bash
-npm install tailwindcss postcss autoprefixer
 npx tailwindcss init -p
 ```
 
-#### 2. Cấu hình `tailwind.config.ts`
+---
+
+## 2. CẤU HÌNH MÔI TRƯỜNG
+
+### `.env.local`
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:6789
+NEXT_PUBLIC_APP_NAME=Ecommerce App
+NEXT_PUBLIC_APP_URL=http://localhost:8989
+```
+
+### `tailwind.config.ts`
 
 ```typescript
 import type {Config} from 'tailwindcss'
 
 const config: Config = {
-  darkMode: ['class'],
+  darkMode: 'class',
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -269,13 +149,27 @@ const config: Config = {
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [],
 }
 
 export default config
 ```
 
-#### 3. Update `app/globals.css`
+### `postcss.config.mjs`
+
+```javascript
+/** @type {import('postcss-load-config').Config} */
+const config = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+
+export default config
+```
+
+### `app/globals.css`
 
 ```css
 @tailwind base;
@@ -349,544 +243,131 @@ export default config
 }
 ```
 
-#### 4. Create `lib/utils/cn.ts`
+---
 
-```typescript
-import {type ClassValue, clsx} from 'clsx'
-import {twMerge} from 'tailwind-merge'
+## 3. CẤU TRÚC THƯ MỤC
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
+Tạo các thư mục sau:
+
+```
+ecommerce-fe/
+├── app/
+│   ├── layout.tsx
+│   ├── page.tsx
+│   └── globals.css
+├── lib/
+│   ├── api/
+│   │   ├── core.ts
+│   │   └── services/
+│   │       └── productService.ts
+│   ├── redux/
+│   │   ├── store.ts
+│   │   ├── hooks.ts
+│   │   └── slices/
+│   │       └── authSlice.ts
+│   ├── providers/
+│   │   ├── reduxProvider.tsx
+│   │   ├── queryProvider.tsx
+│   │   └── index.tsx
+│   ├── utils/
+│   │   └── cn.ts
+├── hooks/
+│   └── useAuth.ts
+├── types/
+│   ├── api.ts
+│   └── models.ts
+├── middleware.ts
+└── .env.local
 ```
 
-### Shadcn UI Integration
-
-#### 1. Initialize Shadcn
+Tạo thư mục:
 
 ```bash
-npx shadcn@latest init
-```
-
-Chọn các options:
-
-- ✅ TypeScript
-- ✅ App Router
-- ✅ Tailwind CSS
-- Style: Default
-- Base color: Slate
-- CSS variables: Yes
-
-#### 2. Add Components
-
-```bash
-# Core UI components
-npx shadcn@latest add button
-npx shadcn@latest add input
-npx shadcn@latest add label
-npx shadcn@latest add card
-npx shadcn@latest add dialog
-npx shadcn@latest add dropdown-menu
-npx shadcn@latest add select
-npx shadcn@latest add toast
-npx shadcn@latest add form
-
-# Optional components
-npx shadcn@latest add accordion
-npx shadcn@latest add alert
-npx shadcn@latest add avatar
-npx shadcn@latest add badge
-npx shadcn@latest add checkbox
-npx shadcn@latest add popover
-npx shadcn@latest add separator
-npx shadcn@latest add skeleton
-npx shadcn@latest add table
-npx shadcn@latest add tabs
-```
-
-#### 3. Example Usage
-
-```typescript
-import {Button} from '@/components/ui/button'
-import {Input} from '@/components/ui/input'
-import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card'
-
-export function ExampleComponent() {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Form Example</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Input placeholder="Enter text..." />
-        <Button className="mt-4">Submit</Button>
-      </CardContent>
-    </Card>
-  )
-}
-```
-
-### Iconify Setup
-
-#### 1. Sử dụng Iconify
-
-```typescript
-import {Icon} from '@iconify/react'
-
-export function IconExample() {
-  return (
-    <div>
-      {/* Material Design Icons */}
-      <Icon icon="mdi:home" width="24" height="24" />
-
-      {/* Lucide Icons */}
-      <Icon icon="lucide:user" className="w-6 h-6 text-primary" />
-
-      {/* Font Awesome */}
-      <Icon icon="fa6-solid:cart-shopping" width="20" />
-
-      {/* Heroicons */}
-      <Icon icon="heroicons:bell-20-solid" className="text-accent" />
-    </div>
-  )
-}
-```
-
-#### 2. Icon Collections
-
-Browse icons at: https://icon-sets.iconify.design/
-
-Popular collections:
-
-- `mdi:` - Material Design Icons
-- `lucide:` - Lucide Icons
-- `heroicons:` - Heroicons
-- `fa6-solid:` - Font Awesome 6 Solid
-- `ph:` - Phosphor Icons
-- `tabler:` - Tabler Icons
-
-#### 3. Dynamic Icon Loading
-
-```typescript
-import {Icon} from '@iconify/react'
-
-interface DynamicIconProps {
-  name: string
-  size?: number
-  className?: string
-}
-
-export function DynamicIcon({name, size = 24, className}: DynamicIconProps) {
-  return <Icon icon={name} width={size} height={size} className={className} />
-}
+mkdir -p lib/api/services lib/redux/slices lib/providers lib/utils hooks types
 ```
 
 ---
 
-## Redux Toolkit Setup
+## 4. FILE TYPES
 
-### Store Configuration
-
-#### 1. Create `lib/redux/store.ts`
+### `types/api.ts`
 
 ```typescript
-import {configureStore, combineReducers} from '@reduxjs/toolkit'
-import {
-  persistStore,
-  persistReducer,
-  FLUSH,
-  REHYDRATE,
-  PAUSE,
-  PERSIST,
-  PURGE,
-  REGISTER,
-} from 'redux-persist'
-import storage from 'redux-persist/lib/storage' // localStorage
-import authSlice from './slices/authSlice'
-import uiSlice from './slices/uiSlice'
-import cartSlice from './slices/cartSlice'
-
-// Combine reducers
-const rootReducer = combineReducers({
-  auth: authSlice,
-  ui: uiSlice,
-  cart: cartSlice,
-})
-
-// Persist configuration
-const persistConfig = {
-  key: 'root',
-  version: 1,
-  storage,
-  whitelist: ['auth', 'cart'], // Only persist auth and cart
-  blacklist: ['ui'], // Don't persist UI state
+// API Response Types
+export interface ApiResponse<T> {
+  code: number
+  status: boolean
+  message: string
+  data: T
 }
 
-const persistedReducer = persistReducer(persistConfig, rootReducer)
-
-// Configure store
-export const store = configureStore({
-  reducer: persistedReducer,
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-      },
-    }),
-  devTools: process.env.NODE_ENV !== 'production',
-})
-
-export const persistor = persistStore(store)
-
-// Types
-export type RootState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch
+export interface ApiError {
+  code?: number
+  message: string
+  status: boolean
+  data?: unknown
+}
 ```
 
-#### 2. Create `lib/redux/hooks.ts`
+### `types/models.ts`
 
 ```typescript
-import {useDispatch, useSelector, useStore} from 'react-redux'
-import type {RootState, AppDispatch} from './store'
-
-// Typed hooks
-export const useAppDispatch = useDispatch.withTypes<AppDispatch>()
-export const useAppSelector = useSelector.withTypes<RootState>()
-export const useAppStore = useStore.withTypes<typeof import('./store').store>()
-```
-
-### Redux Persist
-
-Redux Persist đã được tích hợp trong store configuration ở trên. State sẽ tự động persist vào localStorage.
-
-### Creating Slices
-
-#### 1. Auth Slice - `lib/redux/slices/authSlice.ts`
-
-```typescript
-import {createSlice, createAsyncThunk, PayloadAction} from '@reduxjs/toolkit'
-import {setCookie, deleteCookie} from 'cookies-next'
-import {jwtDecode} from 'jwt-decode'
-import apiService from '@/lib/api/core'
-import type {RootState} from '../store'
-
-// Types
+// User Model
 export interface User {
   id: string
   email: string
   name: string
   role: string
+  avatar?: string
+  createdAt: string
+  updatedAt: string
 }
 
-interface AuthState {
-  user: User | null
-  token: string | null
-  isAuthenticated: boolean
-  isLoading: boolean
-  error: string | null
-}
-
-// Initial state
-const initialState: AuthState = {
-  user: null,
-  token: null,
-  isAuthenticated: false,
-  isLoading: false,
-  error: null,
-}
-
-// Async thunks
-export const loginAsync = createAsyncThunk(
-  'auth/login',
-  async (
-    credentials: {email: string; password: string; rememberMe?: boolean},
-    {rejectWithValue}
-  ) => {
-    try {
-      const response = await apiService.post<{
-        status: boolean
-        data: {accessToken: string; user: User}
-      }>('/auth/login', credentials)
-
-      if (response.data.status && response.data.data.accessToken) {
-        const token = response.data.data.accessToken
-        const maxAge = credentials.rememberMe ? 30 * 24 * 60 * 60 : 24 * 60 * 60
-
-        setCookie('auth-token', token, {maxAge, path: '/'})
-        apiService.setAuthToken(token)
-
-        return {token, user: response.data.data.user}
-      }
-
-      return rejectWithValue('Login failed')
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Login failed')
-    }
-  }
-)
-
-export const logoutAsync = createAsyncThunk('auth/logout', async (_, {rejectWithValue}) => {
-  try {
-    await apiService.post('/auth/logout')
-    deleteCookie('auth-token', {path: '/'})
-    apiService.setAuthToken(null)
-    return true
-  } catch (error: any) {
-    return rejectWithValue(error.message)
-  }
-})
-
-export const refreshTokenAsync = createAsyncThunk(
-  'auth/refreshToken',
-  async (_, {rejectWithValue}) => {
-    try {
-      const response = await apiService.post<{
-        status: boolean
-        data: {accessToken: string}
-      }>('/auth/refresh')
-
-      if (response.data.status && response.data.data.accessToken) {
-        const token = response.data.data.accessToken
-        setCookie('auth-token', token, {maxAge: 24 * 60 * 60, path: '/'})
-        apiService.setAuthToken(token)
-        return token
-      }
-
-      return rejectWithValue('Refresh failed')
-    } catch (error: any) {
-      return rejectWithValue(error.message)
-    }
-  }
-)
-
-// Slice
-const authSlice = createSlice({
-  name: 'auth',
-  initialState,
-  reducers: {
-    setCredentials: (state, action: PayloadAction<{user: User; token: string}>) => {
-      state.user = action.payload.user
-      state.token = action.payload.token
-      state.isAuthenticated = true
-      state.error = null
-    },
-    setToken: (state, action: PayloadAction<string>) => {
-      state.token = action.payload
-      apiService.setAuthToken(action.payload)
-
-      try {
-        const decoded = jwtDecode<User>(action.payload)
-        state.user = decoded
-        state.isAuthenticated = true
-      } catch (error) {
-        console.error('Failed to decode token:', error)
-      }
-    },
-    logout: (state) => {
-      state.user = null
-      state.token = null
-      state.isAuthenticated = false
-      state.error = null
-      deleteCookie('auth-token', {path: '/'})
-      apiService.setAuthToken(null)
-    },
-    clearError: (state) => {
-      state.error = null
-    },
-  },
-  extraReducers: (builder) => {
-    // Login
-    builder
-      .addCase(loginAsync.pending, (state) => {
-        state.isLoading = true
-        state.error = null
-      })
-      .addCase(loginAsync.fulfilled, (state, action) => {
-        state.isLoading = false
-        state.token = action.payload.token
-        state.user = action.payload.user
-        state.isAuthenticated = true
-        state.error = null
-      })
-      .addCase(loginAsync.rejected, (state, action) => {
-        state.isLoading = false
-        state.error = action.payload as string
-      })
-
-    // Logout
-    builder
-      .addCase(logoutAsync.pending, (state) => {
-        state.isLoading = true
-      })
-      .addCase(logoutAsync.fulfilled, (state) => {
-        state.user = null
-        state.token = null
-        state.isAuthenticated = false
-        state.isLoading = false
-        state.error = null
-      })
-      .addCase(logoutAsync.rejected, (state) => {
-        state.isLoading = false
-      })
-
-    // Refresh Token
-    builder
-      .addCase(refreshTokenAsync.fulfilled, (state, action) => {
-        state.token = action.payload
-      })
-      .addCase(refreshTokenAsync.rejected, (state) => {
-        state.user = null
-        state.token = null
-        state.isAuthenticated = false
-      })
-  },
-})
-
-// Actions
-export const {setCredentials, setToken, logout, clearError} = authSlice.actions
-
-// Selectors
-export const selectAuth = (state: RootState) => state.auth
-export const selectUser = (state: RootState) => state.auth.user
-export const selectIsAuthenticated = (state: RootState) => state.auth.isAuthenticated
-export const selectAuthToken = (state: RootState) => state.auth.token
-
-export default authSlice.reducer
-```
-
-#### 2. UI Slice - `lib/redux/slices/uiSlice.ts`
-
-```typescript
-import {createSlice, PayloadAction} from '@reduxjs/toolkit'
-import type {RootState} from '../store'
-
-interface UiState {
-  theme: 'light' | 'dark' | 'system'
-  sidebarOpen: boolean
-  modalOpen: boolean
-  loading: boolean
-}
-
-const initialState: UiState = {
-  theme: 'system',
-  sidebarOpen: false,
-  modalOpen: false,
-  loading: false,
-}
-
-const uiSlice = createSlice({
-  name: 'ui',
-  initialState,
-  reducers: {
-    setTheme: (state, action: PayloadAction<'light' | 'dark' | 'system'>) => {
-      state.theme = action.payload
-    },
-    toggleSidebar: (state) => {
-      state.sidebarOpen = !state.sidebarOpen
-    },
-    setSidebarOpen: (state, action: PayloadAction<boolean>) => {
-      state.sidebarOpen = action.payload
-    },
-    setModalOpen: (state, action: PayloadAction<boolean>) => {
-      state.modalOpen = action.payload
-    },
-    setLoading: (state, action: PayloadAction<boolean>) => {
-      state.loading = action.payload
-    },
-  },
-})
-
-export const {setTheme, toggleSidebar, setSidebarOpen, setModalOpen, setLoading} = uiSlice.actions
-
-// Selectors
-export const selectTheme = (state: RootState) => state.ui.theme
-export const selectSidebarOpen = (state: RootState) => state.ui.sidebarOpen
-export const selectModalOpen = (state: RootState) => state.ui.modalOpen
-export const selectLoading = (state: RootState) => state.ui.loading
-
-export default uiSlice.reducer
-```
-
-#### 3. Cart Slice - `lib/redux/slices/cartSlice.ts`
-
-```typescript
-import {createSlice, PayloadAction} from '@reduxjs/toolkit'
-import type {RootState} from '../store'
-
-interface CartItem {
+// Product Model
+export interface Product {
   id: string
+  name: string
+  description: string
+  price: number
+  category: string
+  stock: number
+  images: string[]
+  rating?: number
+  reviews?: number
+  createdAt: string
+  updatedAt: string
+}
+
+// Order Model
+export interface Order {
+  id: string
+  userId: string
+  items: OrderItem[]
+  total: number
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled'
+  createdAt: string
+  updatedAt: string
+}
+
+export interface OrderItem {
+  productId: string
   name: string
   price: number
   quantity: number
   image?: string
 }
-
-interface CartState {
-  items: CartItem[]
-  total: number
-}
-
-const initialState: CartState = {
-  items: [],
-  total: 0,
-}
-
-const cartSlice = createSlice({
-  name: 'cart',
-  initialState,
-  reducers: {
-    addToCart: (state, action: PayloadAction<CartItem>) => {
-      const existingItem = state.items.find((item) => item.id === action.payload.id)
-
-      if (existingItem) {
-        existingItem.quantity += action.payload.quantity
-      } else {
-        state.items.push(action.payload)
-      }
-
-      state.total = state.items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-    },
-    removeFromCart: (state, action: PayloadAction<string>) => {
-      state.items = state.items.filter((item) => item.id !== action.payload)
-      state.total = state.items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-    },
-    updateQuantity: (state, action: PayloadAction<{id: string; quantity: number}>) => {
-      const item = state.items.find((item) => item.id === action.payload.id)
-
-      if (item) {
-        item.quantity = action.payload.quantity
-        state.total = state.items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-      }
-    },
-    clearCart: (state) => {
-      state.items = []
-      state.total = 0
-    },
-  },
-})
-
-export const {addToCart, removeFromCart, updateQuantity, clearCart} = cartSlice.actions
-
-// Selectors
-export const selectCartItems = (state: RootState) => state.cart.items
-export const selectCartTotal = (state: RootState) => state.cart.total
-export const selectCartItemCount = (state: RootState) =>
-  state.cart.items.reduce((count, item) => count + item.quantity, 0)
-
-export default cartSlice.reducer
 ```
 
 ---
 
-## API Layer Architecture
+## 5. API SERVICE CORE
 
-### Core API Service
+### `lib/api/core.ts`
 
-### Core API Service
-
-#### 1. Tạo `lib/api/core.ts`
+**⚠️ QUAN TRỌNG: Copy chính xác code này!**
 
 ```typescript
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios'
 import {deleteCookie} from 'cookies-next'
 import {store} from '@/lib/redux/store'
@@ -1050,962 +531,274 @@ const apiService = new ApiService(
 export default apiService
 ```
 
-### Service Layer Pattern
+---
 
-#### Pattern cho mỗi service file
+## 6. REDUX STORE & AUTH
 
-**Template: `lib/api/services/exampleService.ts`**
-
-```typescript
-import apiService from '../core'
-
-// ============================================
-// 1. DEFINE TYPES & INTERFACES
-// ============================================
-
-export interface Example {
-  id: string
-  name: string
-  description: string
-  createdAt: string
-}
-
-export interface ExampleListResponse {
-  code: number
-  status: boolean
-  message: string
-  data: {
-    items: Example[]
-    totalCount: number
-    page: number
-    pageSize: number
-  }
-}
-
-export interface ExampleDetailResponse {
-  code: number
-  status: boolean
-  message: string
-  data: Example
-}
-
-export interface CreateExampleRequest {
-  name: string
-  description: string
-}
-
-export interface UpdateExampleRequest extends Partial<CreateExampleRequest> {
-  id: string
-}
-
-export interface ExampleFilters {
-  searchTerm?: string
-  page?: number
-  pageSize?: number
-}
-
-// ============================================
-// 2. HELPER FUNCTIONS
-// ============================================
-
-const convertFilters = (filters?: ExampleFilters): Record<string, any> => {
-  if (!filters) return {}
-
-  const params: Record<string, any> = {}
-  if (filters.searchTerm) params.searchTerm = filters.searchTerm
-  if (filters.page !== undefined) params.page = filters.page
-  if (filters.pageSize !== undefined) params.pageSize = filters.pageSize
-
-  return params
-}
-
-// ============================================
-// 3. SERVICE OBJECT
-// ============================================
-
-export const exampleService = {
-  // GET list
-  getExamples: async (filters?: ExampleFilters): Promise<ExampleListResponse> => {
-    const params = convertFilters(filters)
-    const response = await apiService.get<ExampleListResponse>('/api/examples', params)
-    return response.data
-  },
-
-  // GET by ID
-  getExample: async (id: string): Promise<ExampleDetailResponse> => {
-    const response = await apiService.get<ExampleDetailResponse>(`/api/examples/${id}`)
-    return response.data
-  },
-
-  // POST create
-  createExample: async (data: CreateExampleRequest): Promise<ExampleDetailResponse> => {
-    const response = await apiService.post<ExampleDetailResponse>('/api/examples', data)
-    return response.data
-  },
-
-  // PUT update
-  updateExample: async (data: UpdateExampleRequest): Promise<ExampleDetailResponse> => {
-    const {id, ...updateData} = data
-    const response = await apiService.put<ExampleDetailResponse>(`/api/examples/${id}`, updateData)
-    return response.data
-  },
-
-  // DELETE
-  deleteExample: async (id: string): Promise<{status: boolean; message: string}> => {
-    const response = await apiService.delete(`/api/examples/${id}`)
-    return response.data
-  },
-}
-
-export default exampleService
-```
-
-#### Service với FormData (Upload)
+### `lib/redux/store.ts`
 
 ```typescript
-export const uploadService = {
-  uploadFile: async (file: File): Promise<UploadResponse> => {
-    const formData = new FormData()
-    formData.append('file', file)
-    formData.append('folder', 'uploads')
-
-    const response = await apiService.upload<UploadResponse>('/api/upload', formData, (progress) =>
-      console.log(`Upload progress: ${progress}%`)
-    )
-
-    return response.data
-  },
-}
-```
-
-### React Query Integration
-
-#### 1. Custom Hooks Pattern
-
-**Template: `hooks/useExample.ts`**
-
-```typescript
-import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query'
-import {toast} from 'sonner'
+import {configureStore, combineReducers} from '@reduxjs/toolkit'
 import {
-  exampleService,
-  type Example,
-  type ExampleFilters,
-  type CreateExampleRequest,
-  type UpdateExampleRequest,
-} from '@/lib/api/services/exampleService'
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from 'redux-persist'
+import storage from 'redux-persist/lib/storage'
+import authSlice from './slices/authSlice'
 
-// ============================================
-// QUERY HOOKS (GET operations)
-// ============================================
+const rootReducer = combineReducers({
+  auth: authSlice,
+})
 
-export function useExamples(filters?: ExampleFilters) {
-  const {data, isLoading, isError, error, refetch, isFetching} = useQuery({
-    queryKey: ['examples', 'list', filters ? JSON.stringify(filters) : 'all'],
-    queryFn: () => exampleService.getExamples(filters),
-    staleTime: 3 * 60 * 1000, // 3 minutes
-    select: (response) => ({
-      items: response.data?.items || [],
-      totalCount: response.data?.totalCount || 0,
-      page: response.data?.page || 1,
-      pageSize: response.data?.pageSize || 10,
+const persistConfig = {
+  key: 'root',
+  version: 1,
+  storage,
+  whitelist: ['auth'],
+}
+
+const persistedReducer = persistReducer(persistConfig, rootReducer)
+
+export const store = configureStore({
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
     }),
-  })
+  devTools: process.env.NODE_ENV !== 'production',
+})
 
-  return {
-    examples: data?.items || [],
-    totalCount: data?.totalCount || 0,
-    page: data?.page || 1,
-    pageSize: data?.pageSize || 10,
-    isLoading,
-    isError,
-    error,
-    refetch,
-    isFetching,
-  }
-}
+export const persistor = persistStore(store)
 
-export function useExample(id?: string) {
-  return useQuery({
-    queryKey: ['examples', 'detail', id],
-    queryFn: () => exampleService.getExample(id!),
-    enabled: !!id, // Only run if id exists
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    select: (response) => response.data,
-  })
-}
-
-// ============================================
-// MUTATION HOOKS (POST/PUT/DELETE operations)
-// ============================================
-
-export function useCreateExample() {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: (newExample: CreateExampleRequest) => exampleService.createExample(newExample),
-    onSuccess: (response) => {
-      if (response.status) {
-        queryClient.invalidateQueries({queryKey: ['examples', 'list']})
-        toast.success(response.message || 'Tạo thành công')
-      } else {
-        toast.error(response.message || 'Tạo thất bại')
-      }
-    },
-    onError: (error: any) => {
-      toast.error(error.message || 'Có lỗi xảy ra')
-    },
-  })
-}
-
-export function useUpdateExample() {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: (updateData: UpdateExampleRequest) => exampleService.updateExample(updateData),
-    onSuccess: (response, variables) => {
-      if (response.status) {
-        queryClient.invalidateQueries({queryKey: ['examples', 'list']})
-        queryClient.invalidateQueries({queryKey: ['examples', 'detail', variables.id]})
-        toast.success(response.message || 'Cập nhật thành công')
-      }
-    },
-    onError: (error: any) => {
-      toast.error(error.message || 'Cập nhật thất bại')
-    },
-  })
-}
-
-export function useDeleteExample() {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: (id: string) => exampleService.deleteExample(id),
-    onSuccess: (response, deletedId) => {
-      if (response.status) {
-        queryClient.invalidateQueries({queryKey: ['examples', 'list']})
-        queryClient.removeQueries({queryKey: ['examples', 'detail', deletedId]})
-        toast.success(response.message || 'Xóa thành công')
-      }
-    },
-    onError: (error: any) => {
-      toast.error(error.message || 'Xóa thất bại')
-    },
-  })
-}
+export type RootState = ReturnType<typeof store.getState>
+export type AppDispatch = typeof store.dispatch
 ```
 
-#### 2. Auth Hooks với Redux
-
-**`hooks/useAuth.ts`**
+### `lib/redux/hooks.ts`
 
 ```typescript
-import {useRouter} from 'next/navigation'
-import {toast} from 'sonner'
-import {useAppDispatch, useAppSelector} from '@/lib/redux/hooks'
-import {loginAsync, logoutAsync, selectAuth} from '@/lib/redux/slices/authSlice'
+import {useDispatch, useSelector} from 'react-redux'
+import type {RootState, AppDispatch} from './store'
 
-export function useAuth() {
-  const dispatch = useAppDispatch()
-  const router = useRouter()
-  const auth = useAppSelector(selectAuth)
-
-  const login = async (credentials: {email: string; password: string; rememberMe?: boolean}) => {
-    try {
-      const result = await dispatch(loginAsync(credentials)).unwrap()
-      toast.success('Đăng nhập thành công')
-      router.push('/dashboard')
-      return result
-    } catch (error: any) {
-      toast.error(error || 'Đăng nhập thất bại')
-      throw error
-    }
-  }
-
-  const logout = async () => {
-    try {
-      await dispatch(logoutAsync()).unwrap()
-      toast.success('Đăng xuất thành công')
-      router.push('/login')
-    } catch (error: any) {
-      toast.error('Có lỗi xảy ra')
-    }
-  }
-
-  return {
-    ...auth,
-    login,
-    logout,
-  }
-}
+export const useAppDispatch = useDispatch.withTypes<AppDispatch>()
+export const useAppSelector = useSelector.withTypes<RootState>()
 ```
 
----
+### `lib/redux/slices/authSlice.ts`
 
-## Form Management
-
-### Formik Setup
-
-#### 1. Basic Formik Form
+**⚠️ QUAN TRỌNG: Copy chính xác code này!**
 
 ```typescript
-'use client'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import {createSlice, createAsyncThunk, PayloadAction} from '@reduxjs/toolkit'
+import {setCookie, deleteCookie} from 'cookies-next'
+import {jwtDecode} from 'jwt-decode'
+import apiService from '@/lib/api/core'
+import type {RootState} from '../store'
 
-import {Formik, Form, Field, ErrorMessage} from 'formik'
-import * as Yup from 'yup'
-import {Button} from '@/components/ui/button'
-import {Input} from '@/components/ui/input'
-import {Label} from '@/components/ui/label'
-
-interface LoginFormValues {
+// Types
+export interface User {
+  id: string
   email: string
-  password: string
-  rememberMe: boolean
-}
-
-const LoginSchema = Yup.object().shape({
-  email: Yup.string().email('Email không hợp lệ').required('Vui lòng nhập email'),
-  password: Yup.string()
-    .min(6, 'Mật khẩu phải có ít nhất 6 ký tự')
-    .required('Vui lòng nhập mật khẩu'),
-})
-
-export function LoginForm() {
-  const initialValues: LoginFormValues = {
-    email: '',
-    password: '',
-    rememberMe: false,
-  }
-
-  const handleSubmit = async (values: LoginFormValues) => {
-    console.log(values)
-    // Call login API
-  }
-
-  return (
-    <Formik initialValues={initialValues} validationSchema={LoginSchema} onSubmit={handleSubmit}>
-      {({errors, touched, isSubmitting}) => (
-        <Form className="space-y-4">
-          <div>
-            <Label htmlFor="email">Email</Label>
-            <Field
-              as={Input}
-              id="email"
-              name="email"
-              type="email"
-              placeholder="your@email.com"
-              className={errors.email && touched.email ? 'border-red-500' : ''}
-            />
-            <ErrorMessage name="email" component="p" className="text-sm text-red-500 mt-1" />
-          </div>
-
-          <div>
-            <Label htmlFor="password">Mật khẩu</Label>
-            <Field
-              as={Input}
-              id="password"
-              name="password"
-              type="password"
-              placeholder="••••••••"
-              className={errors.password && touched.password ? 'border-red-500' : ''}
-            />
-            <ErrorMessage name="password" component="p" className="text-sm text-red-500 mt-1" />
-          </div>
-
-          <div className="flex items-center">
-            <Field id="rememberMe" name="rememberMe" type="checkbox" className="mr-2" />
-            <Label htmlFor="rememberMe" className="cursor-pointer">
-              Ghi nhớ đăng nhập
-            </Label>
-          </div>
-
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? 'Đang đăng nhập...' : 'Đăng nhập'}
-          </Button>
-        </Form>
-      )}
-    </Formik>
-  )
-}
-```
-
-### Yup Validation
-
-#### 1. Common Validation Schemas - `lib/utils/validators.ts`
-
-```typescript
-import * as Yup from 'yup'
-
-// Email validation
-export const emailSchema = Yup.string().email('Email không hợp lệ').required('Vui lòng nhập email')
-
-// Password validation
-export const passwordSchema = Yup.string()
-  .min(8, 'Mật khẩu phải có ít nhất 8 ký tự')
-  .matches(/[a-z]/, 'Mật khẩu phải chứa ít nhất 1 chữ thường')
-  .matches(/[A-Z]/, 'Mật khẩu phải chứa ít nhất 1 chữ hoa')
-  .matches(/[0-9]/, 'Mật khẩu phải chứa ít nhất 1 số')
-  .required('Vui lòng nhập mật khẩu')
-
-// Phone validation
-export const phoneSchema = Yup.string()
-  .matches(/^[0-9]{10}$/, 'Số điện thoại phải có 10 chữ số')
-  .required('Vui lòng nhập số điện thoại')
-
-// URL validation
-export const urlSchema = Yup.string().url('URL không hợp lệ').required('Vui lòng nhập URL')
-
-// Number range validation
-export const priceSchema = Yup.number().min(0, 'Giá phải lớn hơn 0').required('Vui lòng nhập giá')
-
-// File validation
-export const imageSchema = Yup.mixed()
-  .required('Vui lòng chọn ảnh')
-  .test('fileSize', 'Kích thước file quá lớn (max 5MB)', (value: any) => {
-    if (!value) return true
-    return value.size <= 5 * 1024 * 1024
-  })
-  .test('fileType', 'Chỉ chấp nhận file ảnh', (value: any) => {
-    if (!value) return true
-    return ['image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(value.type)
-  })
-
-// Login schema
-export const LoginSchema = Yup.object().shape({
-  email: emailSchema,
-  password: Yup.string().required('Vui lòng nhập mật khẩu'),
-  rememberMe: Yup.boolean(),
-})
-
-// Register schema
-export const RegisterSchema = Yup.object().shape({
-  name: Yup.string()
-    .min(2, 'Tên phải có ít nhất 2 ký tự')
-    .max(50, 'Tên không được quá 50 ký tự')
-    .required('Vui lòng nhập tên'),
-  email: emailSchema,
-  password: passwordSchema,
-  confirmPassword: Yup.string()
-    .oneOf([Yup.ref('password')], 'Mật khẩu không khớp')
-    .required('Vui lòng xác nhận mật khẩu'),
-})
-
-// Product schema
-export const ProductSchema = Yup.object().shape({
-  name: Yup.string()
-    .min(3, 'Tên sản phẩm phải có ít nhất 3 ký tự')
-    .required('Vui lòng nhập tên sản phẩm'),
-  description: Yup.string()
-    .min(10, 'Mô tả phải có ít nhất 10 ký tự')
-    .required('Vui lòng nhập mô tả'),
-  price: priceSchema,
-  category: Yup.string().required('Vui lòng chọn danh mục'),
-  stock: Yup.number()
-    .min(0, 'Số lượng phải lớn hơn hoặc bằng 0')
-    .required('Vui lòng nhập số lượng'),
-})
-```
-
-### Form Patterns
-
-#### 1. Form với Shadcn UI Components
-
-```typescript
-'use client'
-
-import {Formik, Form, Field} from 'formik'
-import * as Yup from 'yup'
-import {Button} from '@/components/ui/button'
-import {Input} from '@/components/ui/input'
-import {Label} from '@/components/ui/label'
-import {Textarea} from '@/components/ui/textarea'
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select'
-import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card'
-
-interface ProductFormValues {
   name: string
-  description: string
-  price: number
-  category: string
-  stock: number
+  role: string
 }
 
-const ProductSchema = Yup.object().shape({
-  name: Yup.string().min(3).required('Vui lòng nhập tên sản phẩm'),
-  description: Yup.string().min(10).required('Vui lòng nhập mô tả'),
-  price: Yup.number().min(0).required('Vui lòng nhập giá'),
-  category: Yup.string().required('Vui lòng chọn danh mục'),
-  stock: Yup.number().min(0).required('Vui lòng nhập số lượng'),
+interface AuthState {
+  user: User | null
+  token: string | null
+  isAuthenticated: boolean
+  isLoading: boolean
+  error: string | null
+}
+
+// Initial state
+const initialState: AuthState = {
+  user: null,
+  token: null,
+  isAuthenticated: false,
+  isLoading: false,
+  error: null,
+}
+
+// Async thunks
+export const loginAsync = createAsyncThunk(
+  'auth/login',
+  async (credentials: {email: string; password: string}, {rejectWithValue}) => {
+    try {
+      const response = await apiService.post<{
+        status: boolean
+        data: {accessToken: string; user: User}
+      }>('/auth/login', credentials)
+
+      if (response.data.status && response.data.data.accessToken) {
+        const token = response.data.data.accessToken
+
+        setCookie('auth-token', token, {maxAge: 7 * 24 * 60 * 60, path: '/'})
+        apiService.setAuthToken(token)
+
+        return {token, user: response.data.data.user}
+      }
+
+      return rejectWithValue('Login failed')
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Login failed')
+    }
+  }
+)
+
+export const logoutAsync = createAsyncThunk('auth/logout', async (_, {rejectWithValue}) => {
+  try {
+    await apiService.post('/auth/logout')
+    deleteCookie('auth-token', {path: '/'})
+    apiService.setAuthToken(null)
+    return true
+  } catch (error: any) {
+    return rejectWithValue(error.message)
+  }
 })
 
-export function ProductForm() {
-  const initialValues: ProductFormValues = {
-    name: '',
-    description: '',
-    price: 0,
-    category: '',
-    stock: 0,
+export const refreshTokenAsync = createAsyncThunk(
+  'auth/refreshToken',
+  async (_, {rejectWithValue}) => {
+    try {
+      const response = await apiService.post<{
+        status: boolean
+        data: {accessToken: string}
+      }>('/auth/refresh')
+
+      if (response.data.status && response.data.data.accessToken) {
+        const token = response.data.data.accessToken
+        setCookie('auth-token', token, {maxAge: 24 * 60 * 60, path: '/'})
+        apiService.setAuthToken(token)
+        return token
+      }
+
+      return rejectWithValue('Refresh failed')
+    } catch (error: any) {
+      return rejectWithValue(error.message)
+    }
   }
+)
 
-  const handleSubmit = async (values: ProductFormValues) => {
-    console.log(values)
-  }
+// Slice
+const authSlice = createSlice({
+  name: 'auth',
+  initialState,
+  reducers: {
+    setCredentials: (state, action: PayloadAction<{user: User; token: string}>) => {
+      state.user = action.payload.user
+      state.token = action.payload.token
+      state.isAuthenticated = true
+      state.error = null
+    },
+    setToken: (state, action: PayloadAction<string>) => {
+      state.token = action.payload
+      apiService.setAuthToken(action.payload)
 
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Thêm Sản Phẩm</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Formik
-          initialValues={initialValues}
-          validationSchema={ProductSchema}
-          onSubmit={handleSubmit}
-        >
-          {({errors, touched, setFieldValue, values, isSubmitting}) => (
-            <Form className="space-y-4">
-              <div>
-                <Label htmlFor="name">Tên sản phẩm</Label>
-                <Field as={Input} id="name" name="name" placeholder="Nhập tên sản phẩm" />
-                {errors.name && touched.name && (
-                  <p className="text-sm text-red-500 mt-1">{errors.name}</p>
-                )}
-              </div>
+      try {
+        const decoded = jwtDecode<User>(action.payload)
+        state.user = decoded
+        state.isAuthenticated = true
+      } catch (error) {
+        console.error('Failed to decode token:', error)
+      }
+    },
+    logout: (state) => {
+      state.user = null
+      state.token = null
+      state.isAuthenticated = false
+      state.error = null
+      deleteCookie('auth-token', {path: '/'})
+      apiService.setAuthToken(null)
+    },
+    clearError: (state) => {
+      state.error = null
+    },
+  },
+  extraReducers: (builder) => {
+    // Login
+    builder
+      .addCase(loginAsync.pending, (state) => {
+        state.isLoading = true
+        state.error = null
+      })
+      .addCase(loginAsync.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.token = action.payload.token
+        state.user = action.payload.user
+        state.isAuthenticated = true
+        state.error = null
+      })
+      .addCase(loginAsync.rejected, (state, action) => {
+        state.isLoading = false
+        state.error = action.payload as string
+      })
 
-              <div>
-                <Label htmlFor="description">Mô tả</Label>
-                <Field
-                  as={Textarea}
-                  id="description"
-                  name="description"
-                  placeholder="Nhập mô tả sản phẩm"
-                  rows={4}
-                />
-                {errors.description && touched.description && (
-                  <p className="text-sm text-red-500 mt-1">{errors.description}</p>
-                )}
-              </div>
+    // Logout
+    builder
+      .addCase(logoutAsync.pending, (state) => {
+        state.isLoading = true
+      })
+      .addCase(logoutAsync.fulfilled, (state) => {
+        state.user = null
+        state.token = null
+        state.isAuthenticated = false
+        state.isLoading = false
+        state.error = null
+      })
+      .addCase(logoutAsync.rejected, (state) => {
+        state.isLoading = false
+      })
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="price">Giá</Label>
-                  <Field as={Input} id="price" name="price" type="number" placeholder="0" />
-                  {errors.price && touched.price && (
-                    <p className="text-sm text-red-500 mt-1">{errors.price}</p>
-                  )}
-                </div>
-
-                <div>
-                  <Label htmlFor="stock">Số lượng</Label>
-                  <Field as={Input} id="stock" name="stock" type="number" placeholder="0" />
-                  {errors.stock && touched.stock && (
-                    <p className="text-sm text-red-500 mt-1">{errors.stock}</p>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="category">Danh mục</Label>
-                <Select
-                  value={values.category}
-                  onValueChange={(value) => setFieldValue('category', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Chọn danh mục" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="electronics">Điện tử</SelectItem>
-                    <SelectItem value="fashion">Thời trang</SelectItem>
-                    <SelectItem value="home">Gia dụng</SelectItem>
-                    <SelectItem value="books">Sách</SelectItem>
-                  </SelectContent>
-                </Select>
-                {errors.category && touched.category && (
-                  <p className="text-sm text-red-500 mt-1">{errors.category}</p>
-                )}
-              </div>
-
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? 'Đang lưu...' : 'Lưu sản phẩm'}
-              </Button>
-            </Form>
-          )}
-        </Formik>
-      </CardContent>
-    </Card>
-  )
-}
-```
-
-#### 2. Form với File Upload
-
-```typescript
-'use client'
-
-import {Formik, Form, Field} from 'formik'
-import * as Yup from 'yup'
-import {useState} from 'react'
-import {Button} from '@/components/ui/button'
-import {Input} from '@/components/ui/input'
-import {Label} from '@/components/ui/label'
-import {Icon} from '@iconify/react'
-
-const ImageUploadSchema = Yup.object().shape({
-  name: Yup.string().required('Vui lòng nhập tên'),
-  image: Yup.mixed()
-    .required('Vui lòng chọn ảnh')
-    .test('fileSize', 'File quá lớn (max 5MB)', (value: any) => {
-      return value && value.size <= 5 * 1024 * 1024
-    })
-    .test('fileType', 'Chỉ chấp nhận file ảnh', (value: any) => {
-      return value && ['image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(value.type)
-    }),
+    // Refresh Token
+    builder
+      .addCase(refreshTokenAsync.fulfilled, (state, action) => {
+        state.token = action.payload
+      })
+      .addCase(refreshTokenAsync.rejected, (state) => {
+        state.user = null
+        state.token = null
+        state.isAuthenticated = false
+      })
+  },
 })
 
-export function ImageUploadForm() {
-  const [preview, setPreview] = useState<string | null>(null)
+// Actions
+export const {setCredentials, setToken, logout, clearError} = authSlice.actions
 
-  const handleSubmit = async (values: any) => {
-    const formData = new FormData()
-    formData.append('name', values.name)
-    formData.append('image', values.image)
+// Selectors
+export const selectAuth = (state: RootState) => state.auth
+export const selectUser = (state: RootState) => state.auth.user
+export const selectIsAuthenticated = (state: RootState) => state.auth.isAuthenticated
+export const selectAuthToken = (state: RootState) => state.auth.token
 
-    // Upload using apiService.upload()
-    console.log('Uploading...', values)
-  }
-
-  return (
-    <Formik
-      initialValues={{name: '', image: null}}
-      validationSchema={ImageUploadSchema}
-      onSubmit={handleSubmit}
-    >
-      {({errors, touched, setFieldValue, isSubmitting}) => (
-        <Form className="space-y-4">
-          <div>
-            <Label htmlFor="name">Tên</Label>
-            <Field as={Input} id="name" name="name" placeholder="Nhập tên" />
-            {errors.name && touched.name && (
-              <p className="text-sm text-red-500 mt-1">{errors.name}</p>
-            )}
-          </div>
-
-          <div>
-            <Label htmlFor="image">Ảnh</Label>
-            <div className="border-2 border-dashed rounded-lg p-4 text-center">
-              <input
-                id="image"
-                name="image"
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(event) => {
-                  const file = event.currentTarget.files?.[0]
-                  if (file) {
-                    setFieldValue('image', file)
-                    setPreview(URL.createObjectURL(file))
-                  }
-                }}
-              />
-              <label htmlFor="image" className="cursor-pointer">
-                {preview ? (
-                  <img
-                    src={preview}
-                    alt="Preview"
-                    className="max-w-full h-48 mx-auto object-cover rounded"
-                  />
-                ) : (
-                  <div className="py-8">
-                    <Icon icon="lucide:upload-cloud" className="w-12 h-12 mx-auto text-gray-400" />
-                    <p className="mt-2 text-sm text-gray-600">Click để chọn ảnh</p>
-                  </div>
-                )}
-              </label>
-            </div>
-            {errors.image && touched.image && (
-              <p className="text-sm text-red-500 mt-1">{errors.image as string}</p>
-            )}
-          </div>
-
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? 'Đang upload...' : 'Upload'}
-          </Button>
-        </Form>
-      )}
-    </Formik>
-  )
-}
+export default authSlice.reducer
 ```
 
 ---
 
-## Animation Setup
+## 7. PROVIDERS
 
-### Framer Motion
-
-#### 1. Page Transitions
-
-**`components/animations/PageTransition.tsx`**
+### `lib/providers/reduxProvider.tsx`
 
 ```typescript
 'use client'
 
-import {motion, AnimatePresence} from 'framer-motion'
-import {usePathname} from 'next/navigation'
-
-const pageVariants = {
-  initial: {
-    opacity: 0,
-    y: 20,
-  },
-  animate: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.4,
-      ease: 'easeOut',
-    },
-  },
-  exit: {
-    opacity: 0,
-    y: -20,
-    transition: {
-      duration: 0.3,
-    },
-  },
-}
-
-export function PageTransition({children}: {children: React.ReactNode}) {
-  const pathname = usePathname()
-
-  return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={pathname}
-        variants={pageVariants}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-      >
-        {children}
-      </motion.div>
-    </AnimatePresence>
-  )
-}
-```
-
-#### 2. Scroll Reveal
-
-**`components/animations/ScrollReveal.tsx`**
-
-```typescript
-'use client'
-
-import {motion} from 'framer-motion'
-import {useInView} from 'framer-motion'
-import {useRef} from 'react'
-
-interface ScrollRevealProps {
-  children: React.ReactNode
-  className?: string
-  delay?: number
-}
-
-export function ScrollReveal({children, className, delay = 0}: ScrollRevealProps) {
-  const ref = useRef(null)
-  const isInView = useInView(ref, {once: true, amount: 0.3})
-
-  return (
-    <motion.div
-      ref={ref}
-      className={className}
-      initial={{opacity: 0, y: 50}}
-      animate={isInView ? {opacity: 1, y: 0} : {opacity: 0, y: 50}}
-      transition={{duration: 0.6, delay, ease: 'easeOut'}}
-    >
-      {children}
-    </motion.div>
-  )
-}
-```
-
-#### 3. Common Animations
-
-```typescript
-'use client'
-
-import {motion} from 'framer-motion'
-
-// Fade In
-export const FadeIn = ({children}: {children: React.ReactNode}) => (
-  <motion.div initial={{opacity: 0}} animate={{opacity: 1}} transition={{duration: 0.5}}>
-    {children}
-  </motion.div>
-)
-
-// Scale Up
-export const ScaleUp = ({children}: {children: React.ReactNode}) => (
-  <motion.div
-    initial={{scale: 0.8, opacity: 0}}
-    animate={{scale: 1, opacity: 1}}
-    transition={{duration: 0.3}}
-  >
-    {children}
-  </motion.div>
-)
-
-// Slide In
-export const SlideIn = ({
-  children,
-  direction = 'left',
-}: {
-  children: React.ReactNode
-  direction?: 'left' | 'right' | 'up' | 'down'
-}) => {
-  const directions = {
-    left: {x: -100},
-    right: {x: 100},
-    up: {y: -100},
-    down: {y: 100},
-  }
-
-  return (
-    <motion.div
-      initial={{...directions[direction], opacity: 0}}
-      animate={{x: 0, y: 0, opacity: 1}}
-      transition={{duration: 0.5}}
-    >
-      {children}
-    </motion.div>
-  )
-}
-
-// Stagger Children
-export const StaggerContainer = ({children}: {children: React.ReactNode}) => (
-  <motion.div
-    initial="hidden"
-    animate="visible"
-    variants={{
-      visible: {
-        transition: {
-          staggerChildren: 0.1,
-        },
-      },
-    }}
-  >
-    {children}
-  </motion.div>
-)
-
-export const StaggerItem = ({children}: {children: React.ReactNode}) => (
-  <motion.div
-    variants={{
-      hidden: {opacity: 0, y: 20},
-      visible: {opacity: 1, y: 0},
-    }}
-  >
-    {children}
-  </motion.div>
-)
-```
-
-### GSAP Integration
-
-#### 1. Basic GSAP Animation
-
-```typescript
-'use client'
-
-import {useEffect, useRef} from 'react'
-import gsap from 'gsap'
-import {ScrollTrigger} from 'gsap/ScrollTrigger'
-
-gsap.registerPlugin(ScrollTrigger)
-
-export function GSAPExample() {
-  const boxRef = useRef(null)
-
-  useEffect(() => {
-    const box = boxRef.current
-
-    // Simple animation
-    gsap.from(box, {
-      opacity: 0,
-      y: 50,
-      duration: 1,
-      ease: 'power3.out',
-    })
-
-    // Scroll-triggered animation
-    gsap.from(box, {
-      scrollTrigger: {
-        trigger: box,
-        start: 'top 80%',
-        end: 'top 50%',
-        scrub: true,
-      },
-      scale: 0.8,
-      opacity: 0,
-    })
-  }, [])
-
-  return (
-    <div ref={boxRef} className="w-32 h-32 bg-primary rounded-lg">
-      Animated Box
-    </div>
-  )
-}
-```
-
-#### 2. GSAP Timeline
-
-```typescript
-'use client'
-
-import {useEffect, useRef} from 'react'
-import gsap from 'gsap'
-
-export function TimelineExample() {
-  const containerRef = useRef(null)
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline()
-
-      tl.from('.box1', {x: -100, opacity: 0, duration: 0.5})
-        .from('.box2', {x: 100, opacity: 0, duration: 0.5}, '-=0.3')
-        .from('.box3', {y: 50, opacity: 0, duration: 0.5}, '-=0.3')
-    }, containerRef)
-
-    return () => ctx.revert()
-  }, [])
-
-  return (
-    <div ref={containerRef} className="space-y-4">
-      <div className="box1 w-32 h-32 bg-red-500 rounded-lg" />
-      <div className="box2 w-32 h-32 bg-blue-500 rounded-lg" />
-      <div className="box3 w-32 h-32 bg-green-500 rounded-lg" />
-    </div>
-  )
-}
-```
-
----
-
-## Global Configuration
-
-### 1. Redux Provider
-
-**`lib/providers/reduxProvider.tsx`**
-
-```typescript
-'use client'
-
+import {ReactNode} from 'react'
 import {Provider} from 'react-redux'
 import {PersistGate} from 'redux-persist/integration/react'
 import {store, persistor} from '@/lib/redux/store'
 
-export function ReduxProvider({children}: {children: React.ReactNode}) {
+export function ReduxProvider({children}: {children: ReactNode}) {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
@@ -2016,31 +809,23 @@ export function ReduxProvider({children}: {children: React.ReactNode}) {
 }
 ```
 
-### 2. React Query Provider
-
-**`lib/providers/queryProvider.tsx`**
+### `lib/providers/queryProvider.tsx`
 
 ```typescript
 'use client'
 
+import {ReactNode, useState} from 'react'
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query'
 import {ReactQueryDevtools} from '@tanstack/react-query-devtools'
-import {useState} from 'react'
 
-export function QueryProvider({children}: {children: React.ReactNode}) {
+export function QueryProvider({children}: {children: ReactNode}) {
   const [queryClient] = useState(
     () =>
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 3 * 60 * 1000, // 3 minutes
-            gcTime: 10 * 60 * 1000, // 10 minutes
-            refetchOnWindowFocus: process.env.NODE_ENV === 'production',
-            retry: 1,
-            refetchOnReconnect: true,
-          },
-          mutations: {
-            retry: false,
+            staleTime: 60 * 1000,
+            refetchOnWindowFocus: false,
           },
         },
       })
@@ -2049,15 +834,13 @@ export function QueryProvider({children}: {children: React.ReactNode}) {
   return (
     <QueryClientProvider client={queryClient}>
       {children}
-      {process.env.NODE_ENV === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   )
 }
 ```
 
-### 3. Providers Composition
-
-**`lib/providers/index.tsx`**
+### `lib/providers/index.tsx`
 
 ```typescript
 'use client'
@@ -2078,24 +861,41 @@ export function Providers({children}: {children: React.ReactNode}) {
 }
 ```
 
-### 4. Root Layout Integration
+---
 
-**`app/layout.tsx`**
+## 8. LAYOUT & GLOBALS
+
+### `app/layout.tsx`
 
 ```typescript
-import {Providers} from '@/lib/providers'
 import type {Metadata} from 'next'
+import {Geist, Geist_Mono} from 'next/font/google'
 import './globals.css'
+import {Providers} from '@/lib/providers'
+
+const geistSans = Geist({
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
+})
+
+const geistMono = Geist_Mono({
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
+})
 
 export const metadata: Metadata = {
   title: 'Ecommerce App',
-  description: 'Modern ecommerce application',
+  description: 'Modern ecommerce application with Next.js 16',
 }
 
-export default function RootLayout({children}: {children: React.ReactNode}) {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) {
   return (
     <html lang="vi">
-      <body>
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <Providers>{children}</Providers>
       </body>
     </html>
@@ -2103,32 +903,11 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
 }
 ```
 
-### 5. Environment Variables
+---
 
-**`.env.local`**
+## 9. MIDDLEWARE
 
-```env
-# API Configuration
-NEXT_PUBLIC_API_URL=http://localhost:5000
-
-# App Configuration
-NEXT_PUBLIC_APP_NAME=Ecommerce App
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-
-# Optional: Analytics, etc.
-```
-
-**`.env.production`**
-
-```env
-NEXT_PUBLIC_API_URL=https://api.yourapp.com
-NEXT_PUBLIC_APP_NAME=Ecommerce App
-NEXT_PUBLIC_APP_URL=https://yourapp.com
-```
-
-### 6. Middleware cho Protected Routes
-
-**`middleware.ts`**
+### `middleware.ts`
 
 ```typescript
 import {NextResponse} from 'next/server'
@@ -2163,9 +942,252 @@ export const config = {
 
 ---
 
-## Development Workflow
+## 10. UTILS & HOOKS
 
-### Package.json Scripts
+### `lib/utils/cn.ts`
+
+```typescript
+import {type ClassValue, clsx} from 'clsx'
+import {twMerge} from 'tailwind-merge'
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+```
+
+### `hooks/useAuth.ts`
+
+```typescript
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import {useRouter} from 'next/navigation'
+import {toast} from 'sonner'
+import {useAppDispatch, useAppSelector} from '@/lib/redux/hooks'
+import {loginAsync, logoutAsync, selectAuth} from '@/lib/redux/slices/authSlice'
+
+export function useAuth() {
+  const dispatch = useAppDispatch()
+  const router = useRouter()
+  const auth = useAppSelector(selectAuth)
+
+  const login = async (credentials: {email: string; password: string}) => {
+    try {
+      const result = await dispatch(loginAsync(credentials)).unwrap()
+      toast.success('Đăng nhập thành công')
+      router.push('/dashboard')
+      return result
+    } catch (error: any) {
+      toast.error(error || 'Đăng nhập thất bại')
+      throw error
+    }
+  }
+
+  const logout = async () => {
+    try {
+      await dispatch(logoutAsync()).unwrap()
+      toast.success('Đăng xuất thành công')
+      router.push('/login')
+    } catch (error: any) {
+      toast.error('Có lỗi xảy ra')
+    }
+  }
+
+  return {
+    ...auth,
+    login,
+    logout,
+  }
+}
+```
+
+---
+
+## 11. FILE MẪU API SERVICE
+
+### `lib/api/services/productService.ts`
+
+**Đây là file MẪU để tạo các service khác (userService, orderService, etc.)**
+
+```typescript
+/**
+ * Product Service - FILE MẪU để tham khảo cho các API service khác
+ *
+ * Hướng dẫn sử dụng:
+ * 1. Import apiService từ '../core'
+ * 2. Định nghĩa types cho request/response
+ * 3. Tạo object service với các method tương ứng API endpoints
+ * 4. Sử dụng với React Query hook hoặc Redux thunk
+ */
+
+import type {ApiResponse} from '@/types/api'
+import type {Product} from '@/types/models'
+import apiService from '../core'
+
+// ====================================
+// Types - Định nghĩa các kiểu dữ liệu
+// ====================================
+export interface ProductFilters {
+  search?: string
+  category?: string
+  minPrice?: number
+  maxPrice?: number
+}
+
+// ====================================
+// Product Service - MẪU CRUD operations
+// ====================================
+export const productService = {
+  /**
+   * GET /products - Lấy danh sách products
+   * Ví dụ: productService.getProducts({ search: 'laptop' })
+   */
+  getProducts: async (filters?: ProductFilters): Promise<ApiResponse<Product[]>> => {
+    const response = await apiService.get<ApiResponse<Product[]>>('/products', filters)
+    return response.data
+  },
+
+  /**
+   * GET /products/:id - Lấy chi tiết 1 product
+   * Ví dụ: productService.getProduct('123')
+   */
+  getProduct: async (id: string): Promise<ApiResponse<Product>> => {
+    const response = await apiService.get<ApiResponse<Product>>(`/products/${id}`)
+    return response.data
+  },
+
+  /**
+   * POST /products - Tạo product mới
+   * Ví dụ: productService.createProduct({ name: 'Product 1', price: 100 })
+   */
+  createProduct: async (data: Partial<Product>): Promise<ApiResponse<Product>> => {
+    const response = await apiService.post<ApiResponse<Product>>('/products', data)
+    return response.data
+  },
+
+  /**
+   * PUT /products/:id - Cập nhật product
+   * Ví dụ: productService.updateProduct('123', { price: 200 })
+   */
+  updateProduct: async (id: string, data: Partial<Product>): Promise<ApiResponse<Product>> => {
+    const response = await apiService.put<ApiResponse<Product>>(`/products/${id}`, data)
+    return response.data
+  },
+
+  /**
+   * DELETE /products/:id - Xóa product
+   * Ví dụ: productService.deleteProduct('123')
+   */
+  deleteProduct: async (id: string): Promise<ApiResponse<void>> => {
+    const response = await apiService.delete<ApiResponse<void>>(`/products/${id}`)
+    return response.data
+  },
+}
+
+/**
+ * ==========================================================================
+ * CÁCH SỬ DỤNG VỚI REACT QUERY HOOK
+ * ==========================================================================
+ *
+ * import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+ * import { productService } from '@/lib/api/services/productService';
+ *
+ * function ProductList() {
+ *   // GET - Lấy danh sách
+ *   const { data, isLoading, error } = useQuery({
+ *     queryKey: ['products'],
+ *     queryFn: () => productService.getProducts()
+ *   });
+ *
+ *   const queryClient = useQueryClient();
+ *
+ *   // POST - Tạo mới
+ *   const createMutation = useMutation({
+ *     mutationFn: productService.createProduct,
+ *     onSuccess: () => {
+ *       queryClient.invalidateQueries({ queryKey: ['products'] });
+ *       toast.success('Tạo sản phẩm thành công!');
+ *     },
+ *     onError: (error) => {
+ *       toast.error('Lỗi tạo sản phẩm!');
+ *     }
+ *   });
+ *
+ *   // PUT - Cập nhật
+ *   const updateMutation = useMutation({
+ *     mutationFn: ({ id, data }) => productService.updateProduct(id, data),
+ *     onSuccess: () => {
+ *       queryClient.invalidateQueries({ queryKey: ['products'] });
+ *     }
+ *   });
+ *
+ *   // DELETE - Xóa
+ *   const deleteMutation = useMutation({
+ *     mutationFn: productService.deleteProduct,
+ *     onSuccess: () => {
+ *       queryClient.invalidateQueries({ queryKey: ['products'] });
+ *     }
+ *   });
+ *
+ *   return (
+ *     <div>
+ *       <button onClick={() => createMutation.mutate({ name: 'New Product' })}>
+ *         Tạo sản phẩm
+ *       </button>
+ *     </div>
+ *   );
+ * }
+ *
+ * ==========================================================================
+ * CÁCH TẠO SERVICE MỚI
+ * ==========================================================================
+ *
+ * 1. Copy file này và đổi tên (vd: userService.ts, orderService.ts)
+ * 2. Thay đổi interface types phù hợp với model
+ * 3. Thay đổi endpoint URL
+ * 4. Thêm/bớt methods tùy theo API backend
+ */
+```
+
+---
+
+## 12. CHECKLIST CUỐI
+
+### ✅ Checklist Setup
+
+- [ ] Cài đặt tất cả dependencies
+- [ ] Tạo `.env.local` với API_URL
+- [ ] Config `tailwind.config.ts`
+- [ ] Config `postcss.config.mjs`
+- [ ] Tạo `app/globals.css` với CSS variables
+- [ ] Tạo cấu trúc thư mục (lib, hooks, types, etc.)
+- [ ] Tạo `types/api.ts` và `types/models.ts`
+- [ ] Tạo `lib/api/core.ts` (ApiService class)
+- [ ] Tạo `lib/redux/store.ts`
+- [ ] Tạo `lib/redux/hooks.ts`
+- [ ] Tạo `lib/redux/slices/authSlice.ts`
+- [ ] Tạo `lib/providers/reduxProvider.tsx`
+- [ ] Tạo `lib/providers/queryProvider.tsx`
+- [ ] Tạo `lib/providers/index.tsx`
+- [ ] Update `app/layout.tsx` với Providers
+- [ ] Tạo `middleware.ts`
+- [ ] Tạo `lib/utils/cn.ts`
+- [ ] Tạo `hooks/useAuth.ts`
+- [ ] Tạo `lib/constants/index.ts`
+- [ ] Tạo `lib/api/services/productService.ts` (mẫu)
+
+### 🚀 Chạy Project
+
+```bash
+npm run dev          # Development với Turbopack
+npm run build        # Build production
+npm start            # Start production
+npm run lint         # Lint code
+npm run lint:fix     # Fix lint errors
+npm run type-check   # TypeScript check
+```
+
+### 📝 Scripts trong package.json
+
+Đảm bảo có các scripts này:
 
 ```json
 {
@@ -2177,347 +1199,64 @@ export const config = {
     "lint:fix": "next lint --fix",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
-    "type-check": "tsc --noEmit",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "type-check": "tsc --noEmit"
   }
 }
 ```
 
-### ESLint Configuration
+---
 
-**`eslint.config.mjs`** (ESLint 9)
+## 🎯 TỔNG KẾT
 
-```javascript
-import {dirname} from 'path'
-import {fileURLToPath} from 'url'
-import {FlatCompat} from '@eslint/eslintrc'
+**✅ Setup đã hoàn tất bao gồm:**
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
+1. **API Layer:**
 
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-})
+   - ApiService class với interceptors
+   - Auto token injection từ Redux
+   - Error handling 401 auto logout
+   - Support GET, POST, PUT, PATCH, DELETE, Upload
 
-const eslintConfig = [
-  ...compat.extends('next/core-web-vitals', 'next/typescript'),
-  {
-    rules: {
-      '@typescript-eslint/no-unused-vars': 'warn',
-      '@typescript-eslint/no-explicit-any': 'warn',
-      'react-hooks/exhaustive-deps': 'warn',
-    },
-  },
-]
+2. **State Management:**
 
-export default eslintConfig
-```
+   - Redux Toolkit với Redux Persist
+   - Auth slice với login/logout/refresh
+   - Typed hooks (useAppDispatch, useAppSelector)
 
-### Prettier Configuration
+3. **Server State:**
 
-**`.prettierrc`**
+   - React Query với DevTools
+   - Stale time 60s
+   - No refetch on window focus
 
-```json
-{
-  "semi": true,
-  "trailingComma": "es5",
-  "singleQuote": true,
-  "printWidth": 100,
-  "tabWidth": 2,
-  "useTabs": false,
-  "plugins": ["@trivago/prettier-plugin-sort-imports", "prettier-plugin-tailwindcss"],
-  "importOrder": [
-    "^react",
-    "^next",
-    "<THIRD_PARTY_MODULES>",
-    "^@/components/(.*)$",
-    "^@/lib/(.*)$",
-    "^@/hooks/(.*)$",
-    "^[./]"
-  ],
-  "importOrderSeparation": true,
-  "importOrderSortSpecifiers": true
-}
-```
+4. **Authentication:**
+
+   - Login với remember me
+   - Token trong cookie
+   - JWT decode
+   - Auto logout on 401
+   - Logout event for multi-tab sync
+
+5. **UI & Styling:**
+
+   - Tailwind CSS với dark mode
+   - CSS variables system
+   - Responsive design ready
+
+6. **Developer Experience:**
+   - TypeScript strict mode
+   - ESLint + Prettier
+   - Type-safe API calls
+   - File mẫu để reference
+
+**🔜 Bước tiếp theo:**
+
+- Tạo trang Login/Register
+- Tạo trang Dashboard
+- Tạo UI components
+- Thêm services theo mẫu productService.ts
+- Tạo forms với Formik + Yup
 
 ---
 
-## Best Practices
-
-### 1. State Management Strategy
-
-**Khi nào dùng Redux?**
-
-- Global app state (auth, user, cart, theme)
-- State cần persist giữa các sessions
-- Complex state logic với nhiều actions
-- State được chia sẻ giữa nhiều components
-
-**Khi nào dùng React Query?**
-
-- Server state (API data)
-- Caching và invalidation
-- Background refetching
-- Optimistic updates
-
-**Khi nào dùng useState/useReducer?**
-
-- Local component state
-- Form state (nếu không dùng Formik)
-- UI state không cần share
-
-### 2. API Service Patterns
-
-```typescript
-// Good - Structured service
-export const userService = {
-  getUsers: () => apiService.get('/users'),
-  getUser: (id: string) => apiService.get(`/users/${id}`),
-  createUser: (data) => apiService.post('/users', data),
-}
-
-// Bad - Mixed concerns
-export const getUsers = () => axios.get('/users')
-export const createUser = (data) => axios.post('/users', data)
-```
-
-### 3. Query Key Conventions
-
-```typescript
-// Good - Hierarchical and consistent
-queryKey: ['users', 'list', {page: 1}]
-queryKey: ['users', 'detail', userId]
-queryKey: ['posts', 'list', {category: 'tech'}]
-
-// Bad - Flat and inconsistent
-queryKey: ['allUsers']
-queryKey: ['userById', userId]
-```
-
-### 4. Form Validation Best Practices
-
-```typescript
-// Good - Reusable schemas
-import {emailSchema, passwordSchema} from '@/lib/utils/validators'
-
-const LoginSchema = Yup.object().shape({
-  email: emailSchema,
-  password: passwordSchema,
-})
-
-// Bad - Duplicate validation logic
-const LoginSchema = Yup.object().shape({
-  email: Yup.string().email().required(),
-  password: Yup.string().min(8).required(),
-})
-```
-
-### 5. Component Organization
-
-```
-components/
-├── ui/              # Shadcn components (atomic)
-├── forms/           # Form components with logic
-├── layouts/         # Layout wrappers
-├── animations/      # Reusable animated components
-└── features/        # Feature-specific components
-    ├── auth/
-    ├── products/
-    └── cart/
-```
-
-### 6. TypeScript Best Practices
-
-```typescript
-// Good - Export types from services
-export type {User, UserResponse, CreateUserRequest}
-
-// Good - Use Pick/Omit for derived types
-export type UpdateUserRequest = Omit<CreateUserRequest, 'password'>
-
-// Good - Generic API response
-export interface ApiResponse<T> {
-  code: number
-  status: boolean
-  message: string
-  data: T
-}
-```
-
-### 7. Performance Optimization
-
-```typescript
-// Lazy load heavy components
-const HeavyChart = dynamic(() => import('@/components/HeavyChart'), {
-  loading: () => <Skeleton />,
-  ssr: false,
-})
-
-// Memoize expensive computations
-const sortedItems = useMemo(() => items.sort((a, b) => a.price - b.price), [items])
-
-// Debounce search inputs
-import {useDebouncedCallback} from 'use-debounce'
-
-const handleSearch = useDebouncedCallback((value) => {
-  refetch({search: value})
-}, 500)
-```
-
-### 8. Error Handling Strategy
-
-```typescript
-// 1. Global error handling (API interceptor) ✅
-// 2. Hook-level error handling
-const {mutate} = useCreateProduct({
-  onError: (error) => {
-    if (error.code === 409) {
-      setDuplicateError(true)
-    }
-  },
-})
-
-// 3. Component-level error boundaries
-;<ErrorBoundary fallback={<ErrorPage />}>
-  <YourComponent />
-</ErrorBoundary>
-```
-
-### 9. Testing Strategy
-
-```typescript
-// Unit tests - Redux slices, utilities
-test('authSlice logout', () => {
-  const state = authSlice(initialState, logout())
-  expect(state.user).toBeNull()
-})
-
-// Integration tests - Hooks with React Query
-test('useUsers fetches users', async () => {
-  const {result} = renderHook(() => useUsers(), {
-    wrapper: createWrapper(),
-  })
-  await waitFor(() => expect(result.current.users).toHaveLength(5))
-})
-
-// E2E tests - User flows
-test('user can login', async () => {
-  render(<LoginPage />)
-  fireEvent.change(screen.getByLabelText('Email'), {
-    target: {value: 'test@example.com'},
-  })
-  // ...
-})
-```
-
-### 10. Security Best Practices
-
-- ✅ Never commit `.env.local` files
-- ✅ Validate all user inputs (Yup schemas)
-- ✅ Sanitize data before API calls
-- ✅ Use HTTPS in production
-- ✅ Implement CSRF protection
-- ✅ Rate limiting on API routes
-- ✅ Secure cookie flags (`httpOnly`, `secure`, `sameSite`)
-
----
-
-## Troubleshooting
-
-### Common Issues
-
-#### 1. "Hydration mismatch with Redux"
-
-```typescript
-// Solution: Wait for client-side hydration
-const [mounted, setMounted] = useState(false)
-
-useEffect(() => {
-  setMounted(true)
-}, [])
-
-if (!mounted) return null
-```
-
-#### 2. "Redux Persist not working"
-
-```typescript
-// Solution: Check PersistGate in providers
-<PersistGate loading={null} persistor={persistor}>
-  {children}
-</PersistGate>
-```
-
-#### 3. "Query data not updating"
-
-```typescript
-// Solution: Invalidate queries properly
-queryClient.invalidateQueries({queryKey: ['users']})
-```
-
-#### 4. "Formik values not updating"
-
-```typescript
-// Solution: Use setFieldValue for controlled components
-<Select value={values.category} onValueChange={(value) => setFieldValue('category', value)} />
-```
-
-#### 5. "GSAP animations not working in Next.js"
-
-```typescript
-// Solution: Use useEffect and gsap.context
-useEffect(() => {
-  const ctx = gsap.context(() => {
-    gsap.from('.box', {x: -100})
-  }, containerRef)
-
-  return () => ctx.revert() // Cleanup
-}, [])
-```
-
----
-
-## Migration Checklist
-
-- [ ] Install all dependencies
-- [ ] Configure Tailwind CSS 4
-- [ ] Initialize Shadcn UI
-- [ ] Create Redux store và slices
-- [ ] Setup Redux Persist
-- [ ] Create `lib/api/core.ts`
-- [ ] Create service files
-- [ ] Create custom hooks (useAuth, useUser, etc.)
-- [ ] Setup providers (Redux, Query, Toaster)
-- [ ] Update `app/layout.tsx`
-- [ ] Create form components with Formik
-- [ ] Add validation schemas
-- [ ] Setup animations (Framer Motion/GSAP)
-- [ ] Configure environment variables
-- [ ] Setup middleware for protected routes
-- [ ] Add ESLint và Prettier configs
-- [ ] Test authentication flow
-- [ ] Test API calls with DevTools
-- [ ] Setup error boundaries
-
----
-
-## Resources
-
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Redux Toolkit](https://redux-toolkit.js.org/)
-- [TanStack Query](https://tanstack.com/query/latest)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Shadcn UI](https://ui.shadcn.com/)
-- [Formik](https://formik.org/)
-- [Yup](https://github.com/jquense/yup)
-- [Framer Motion](https://www.framer.com/motion/)
-- [GSAP](https://gsap.com/)
-- [Iconify](https://iconify.design/)
-
----
-
-**Version**: 2.0.0  
-**Last Updated**: December 2025  
-**Architecture**: Next.js 16+ App Router + TypeScript + Redux Toolkit
+**Setup này đã được test và chạy thực tế - Copy chính xác để đảm bảo hoạt động!**

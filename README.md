@@ -1,36 +1,95 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ecommerce Frontend
 
-## Getting Started
+Modern ecommerce application built with Next.js 16 + Redux Toolkit + React Query
 
-First, run the development server:
+## Tech Stack
+
+- **Next.js 16** - React framework
+- **Redux Toolkit** - State management
+- **TanStack React Query** - Server state
+- **Axios** - HTTP client
+- **Tailwind CSS** - Styling
+- **Formik + Yup** - Forms & validation
+- **Framer Motion** - Animations
+
+## Quick Start
 
 ```bash
+# Install dependencies
+npm install
+
+# Create .env.local
+NEXT_PUBLIC_API_URL=http://localhost:5000
+NEXT_PUBLIC_APP_NAME=Ecommerce App
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+app/                # Next.js App Router
+lib/
+  api/             # ✅ API services (axios + interceptors)
+  redux/           # ✅ Redux store + auth slice
+  providers/       # ✅ React providers
+  utils/           # ✅ Utilities + validators
+  constants/       # ✅ App constants
+hooks/             # ✅ Custom hooks (useAuth)
+types/             # ✅ TypeScript types
+middleware.ts      # ✅ Protected routes
+```
 
-## Learn More
+## Features
 
-To learn more about Next.js, take a look at the following resources:
+✅ **Authentication:**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Login/Register với Redux Toolkit
+- JWT token trong cookies
+- Protected routes middleware
+- Auto redirect on 401 errors
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+✅ **API Layer:**
 
-## Deploy on Vercel
+- Axios service với interceptors
+- Auto token injection
+- Error handling
+- File mẫu: `lib/api/services/productService.ts`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+✅ **State Management:**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Redux Toolkit + Redux Persist
+- React Query cho server state
+- Typed hooks
+
+## Available Scripts
+
+```bash
+npm run dev          # Development với Turbopack
+npm run build        # Build production
+npm start            # Start production server
+npm run lint         # Lint code
+npm run lint:fix     # Fix lint errors
+npm run type-check   # TypeScript check
+npm run format       # Format code
+```
+
+## Documentation
+
+📚 Xem [SETUP.md](./SETUP.md) để biết chi tiết setup và architecture
+
+## Next Steps
+
+- [ ] Tạo trang Login (`app/login/page.tsx`)
+- [ ] Tạo trang Register (`app/register/page.tsx`)
+- [ ] Tạo trang Dashboard (`app/dashboard/page.tsx`)
+- [ ] Tạo UI components (Button, Input, Card...)
+- [ ] Tạo thêm API services theo mẫu `productService.ts`
+
+---
+
+**Built with ❤️ using Next.js 16 + Modern Stack**
