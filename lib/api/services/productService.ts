@@ -8,18 +8,18 @@
  * 4. Sử dụng với React Query hook hoặc Redux thunk
  */
 
-import type {ApiResponse} from '@/types/api'
-import type {Product} from '@/types/models'
-import apiService from '../core'
+import type { ApiResponse } from "@/types/api";
+import type { Product } from "@/types/models";
+import apiService from "../core";
 
 // ====================================
 // Types - Định nghĩa các kiểu dữ liệu
 // ====================================
 export interface ProductFilters {
-  search?: string
-  category?: string
-  minPrice?: number
-  maxPrice?: number
+  search?: string;
+  category?: string;
+  minPrice?: number;
+  maxPrice?: number;
 }
 
 // ====================================
@@ -31,10 +31,10 @@ export const productService = {
    * Ví dụ: productService.getProducts({ search: 'laptop' })
    */
   getProducts: async (filters?: ProductFilters): Promise<ApiResponse<Product[]>> => {
-    const response = await apiService.get<ApiResponse<Product[]>>('/products', {
+    const response = await apiService.get<ApiResponse<Product[]>>("/products", {
       params: filters,
-    })
-    return response.data
+    });
+    return response.data;
   },
 
   /**
@@ -42,8 +42,8 @@ export const productService = {
    * Ví dụ: productService.getProduct('123')
    */
   getProduct: async (id: string): Promise<ApiResponse<Product>> => {
-    const response = await apiService.get<ApiResponse<Product>>(`/products/${id}`)
-    return response.data
+    const response = await apiService.get<ApiResponse<Product>>(`/products/${id}`);
+    return response.data;
   },
 
   /**
@@ -51,8 +51,8 @@ export const productService = {
    * Ví dụ: productService.createProduct({ name: 'Product 1', price: 100 })
    */
   createProduct: async (data: Partial<Product>): Promise<ApiResponse<Product>> => {
-    const response = await apiService.post<ApiResponse<Product>>('/products', data)
-    return response.data
+    const response = await apiService.post<ApiResponse<Product>>("/products", data);
+    return response.data;
   },
 
   /**
@@ -60,8 +60,8 @@ export const productService = {
    * Ví dụ: productService.updateProduct('123', { price: 200 })
    */
   updateProduct: async (id: string, data: Partial<Product>): Promise<ApiResponse<Product>> => {
-    const response = await apiService.put<ApiResponse<Product>>(`/products/${id}`, data)
-    return response.data
+    const response = await apiService.put<ApiResponse<Product>>(`/products/${id}`, data);
+    return response.data;
   },
 
   /**
@@ -69,10 +69,10 @@ export const productService = {
    * Ví dụ: productService.deleteProduct('123')
    */
   deleteProduct: async (id: string): Promise<ApiResponse<void>> => {
-    const response = await apiService.delete<ApiResponse<void>>(`/products/${id}`)
-    return response.data
+    const response = await apiService.delete<ApiResponse<void>>(`/products/${id}`);
+    return response.data;
   },
-}
+};
 
 /**
  * ==========================================================================
