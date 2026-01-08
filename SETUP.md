@@ -55,7 +55,7 @@ npm install crypto-js bcryptjs
 npm install -D @types/js-cookie
 
 # Code Quality & Git Hooks
-npm install -D eslint prettier husky lint-staged
+npm install -D eslint prettier
 ```
 
 ### Bước 2: Init Tailwind (nếu chưa có)
@@ -82,7 +82,6 @@ NEXT_PUBLIC_APP_URL=http://localhost:8989
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-  darkMode: "class",
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -91,46 +90,55 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+        background: "#ffffff",
+        foreground: "#0A000E",
+
+        // Brand Colors - Bộ màu chính
+        brand: {
+          pink: "#f4449b",
+          magenta: "#ad1c9a",
+          purple: "#67178d",
+          dark: "#0A000E",
         },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
-        },
+
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "#ad1c9a",
+          foreground: "#ffffff",
+          50: "#fdf4f9",
+          100: "#fbe8f4",
+          200: "#f8d1e9",
+          300: "#f4a9d7",
+          400: "#ed75bd",
+          500: "#f4449b",
+          600: "#ad1c9a",
+          700: "#67178d",
+          800: "#0A000E",
+          900: "#1a0226",
         },
+
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
+          DEFAULT: "#67178d",
+          foreground: "#ffffff",
         },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
-        },
+
         accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
+          DEFAULT: "#f4449b",
+          foreground: "#ffffff",
         },
+
+        muted: {
+          DEFAULT: "#f3f4f6",
+          foreground: "#6b7280",
+        },
+
         destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
+          DEFAULT: "#ef4444",
+          foreground: "#ffffff",
         },
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        chart: {
-          "1": "hsl(var(--chart-1))",
-          "2": "hsl(var(--chart-2))",
-          "3": "hsl(var(--chart-3))",
-          "4": "hsl(var(--chart-4))",
-          "5": "hsl(var(--chart-5))",
-        },
+
+        border: "#e5e7eb",
+        input: "#e5e7eb",
+        ring: "#ad1c9a",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -182,58 +190,43 @@ export default config;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --radius: 0.5rem;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-  }
+    /* Brand Colors */
+    --brand-pink: #f4449b;
+    --brand-magenta: #ad1c9a;
+    --brand-purple: #67178d;
+    --brand-dark: #0a000e;
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    /* Base */
+    --background: #ffffff;
+    --foreground: #0a000e;
+
+    /* Primary - Gradient từ pink -> dark purple */
+    --primary: #ad1c9a;
+    --primary-foreground: #ffffff;
+
+    /* Secondary */
+    --secondary: #67178d;
+    --secondary-foreground: #ffffff;
+
+    /* Accent */
+    --accent: #f4449b;
+    --accent-foreground: #ffffff;
+
+    /* Muted */
+    --muted: #f3f4f6;
+    --muted-foreground: #6b7280;
+
+    /* Destructive */
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
+
+    /* Border & Input */
+    --border: #e5e7eb;
+    --input: #e5e7eb;
+    --ring: #ad1c9a;
+
+    /* Border Radius */
+    --radius: 0.5rem;
   }
 }
 
@@ -296,80 +289,6 @@ node_modules
 package-lock.json
 .env*
 ```
-
-### Bước 2: Cài đặt Husky và Lint-Staged
-
-```bash
-# Cài đặt packages
-npm install -D husky lint-staged
-
-# Khởi tạo Husky
-npx husky init
-```
-
-### Bước 3: Cấu hình Pre-commit Hook
-
-Sửa file `.husky/pre-commit`:
-
-```bash
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
-
-npx lint-staged
-
-npm run build
-```
-
-**✨ Pre-commit hook sẽ:**
-
-1. Chạy lint-staged (ESLint + Prettier) cho staged files
-2. Chạy build để đảm bảo code build thành công
-3. Block commit nếu có bất kỳ lỗi nào
-
-### Bước 4: Thêm Lint-Staged Config vào `package.json`
-
-Thêm vào `package.json`:
-
-```json
-{
-  "scripts": {
-    "dev": "next dev --turbopack -p 8989",
-    "build": "next build",
-    "start": "next start -p 8989",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
-    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
-    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
-    "type-check": "tsc --noEmit",
-    "validate": "npm run format && npm run lint:fix && npm run type-check",
-    "prepare": "husky"
-  },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx}": ["eslint --fix", "prettier --write"],
-    "*.{json,css,md}": ["prettier --write"]
-  }
-}
-```
-
-### Bước 5: Test Git Hooks
-
-```bash
-# Format tất cả code
-npm run format
-
-# Validate toàn bộ project
-npm run validate
-
-# Test commit (phải pass lint trước khi commit)
-git add .
-git commit -m "test: setup husky pre-commit hook"
-```
-
-**✨ Từ giờ mỗi lần commit, Husky sẽ tự động:**
-
-- Chạy ESLint và tự động fix lỗi
-- Format code với Prettier
-- Chỉ cho commit khi code không có lỗi
 
 ---
 
@@ -1301,7 +1220,6 @@ export const productService = {
 - [ ] Tạo `hooks/useAuth.ts`
 - [ ] Tạo `lib/constants/index.ts`
 - [ ] Tạo `lib/api/services/productService.ts` (mẫu)
-- [ ] **Setup Husky & Lint-staged cho pre-commit hooks**
 - [ ] **Tạo `.prettierrc` và `.prettierignore`**
 - [ ] **Test pre-commit hook với git commit**
 
@@ -1334,42 +1252,10 @@ npm run validate     # Chạy tất cả checks
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "type-check": "tsc --noEmit",
-    "validate": "npm run format && npm run lint:fix && npm run type-check",
-    "prepare": "husky"
-  },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx}": ["eslint --fix", "prettier --write"],
-    "*.{json,css,md}": ["prettier --write"]
+    "validate": "npm run format && npm run lint:fix && npm run type-check"
   }
 }
 ```
-
-### 🔒 Git Hooks & Code Quality
-
-**Husky Pre-commit Hook** đã được cài đặt để đảm bảo code quality:
-
-✅ **Mỗi lần commit, tự động:**
-
-- Chạy ESLint và fix lỗi cho staged files
-- Format code với Prettier
-- **Chạy build để đảm bảo code build thành công**
-- **Block commit nếu có bất kỳ lỗi nào (lint hoặc build)**
-
-**Test pre-commit hook:**
-
-```bash
-# Thử commit để test hook
-git add .
-git commit -m "test: verify pre-commit hook"
-```
-
-**Pre-commit sẽ fail nếu:**
-
-- Code có lỗi ESLint không thể tự động fix
-- Code format sai
-- **Build bị lỗi (TypeScript errors, import errors, etc.)**
-
-Bạn cần fix tất cả lỗi trước khi commit thành công.
 
 ---
 
@@ -1401,17 +1287,13 @@ Bạn cần fix tất cả lỗi trước khi commit thành công.
    - Logout event for multi-tab sync
 
 5. **UI & Styling:**
-   - Tailwind CSS với dark mode
+   - Tailwind CSS
    - CSS variables system
    - Responsive design ready
 
-6. **Code Quality & Git Hooks:**
+6. **Code Quality:**
    - ESLint với Next.js config
    - Prettier cho code formatting
-   - Husky pre-commit hooks
-   - Lint-staged để lint chỉ staged files
-   - Auto fix & format trước commit
-   - Block commit nếu có lỗi
 
 7. **Developer Experience:**
    - TypeScript strict mode

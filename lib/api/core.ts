@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
-import { deleteCookie } from "cookies-next";
+import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import { store } from "@/lib/redux/store";
-import { logout } from "@/lib/redux/slices/authSlice";
+import { logout, setCredentials } from "@/lib/redux/slices/authSlice";
 
 export interface ApiError {
   code?: number;
@@ -14,6 +14,11 @@ export interface ApiError {
 class ApiService {
   private client: AxiosInstance;
   private authToken: string | null = null;
+  private isRefreshing = false;
+  private refreshQueue: Array<{
+    resolve: (token: string) => void;
+    reject: (error: any) => void;
+  }> = [];
 
   constructor(baseURL: string, timeout = 10000) {
     this.client = axios.create({
@@ -51,14 +56,54 @@ class ApiService {
     this.client.interceptors.response.use(
       (response) => response,
       async (error) => {
-        // Handle 401 Unauthorized
-        if (error.response?.status === 401) {
-          deleteCookie("auth-token", { path: "/" });
-          store.dispatch(logout());
+        const originalRequest = error.config;
 
-          // Dispatch logout event for other tabs/windows
-          if (typeof window !== "undefined") {
-            window.dispatchEvent(new Event("logout"));
+        // Handle 401 Unauthorized - Token expired or invalid
+        if (error.response?.status === 401 && !originalRequest._retry) {
+          // Nếu request là refresh-token thì không retry
+          if (originalRequest.url?.includes("/auth/refresh-token")) {
+            this.handleLogout();
+            return Promise.reject(error);
+          }
+
+          originalRequest._retry = true;
+
+          // Nếu đang refresh token, đợi kết quả
+          if (this.isRefreshing) {
+            return new Promise((resolve, reject) => {
+              this.refreshQueue.push({ resolve, reject });
+            })
+              .then((token) => {
+                originalRequest.headers.Authorization = `Bearer ${token}`;
+                return this.client(originalRequest);
+              })
+              .catch((err) => {
+                return Promise.reject(err);
+              });
+          }
+
+          this.isRefreshing = true;
+
+          try {
+            const newToken = await this.refreshAccessToken();
+
+            // Update token cho request hiện tại
+            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+
+            // Xử lý tất cả requests đang đợi
+            this.refreshQueue.forEach(({ resolve }) => resolve(newToken));
+            this.refreshQueue = [];
+            this.isRefreshing = false;
+
+            // Retry request ban đầu
+            return this.client(originalRequest);
+          } catch (refreshError) {
+            // Refresh thất bại -> Logout user
+            this.refreshQueue.forEach(({ reject }) => reject(refreshError));
+            this.refreshQueue = [];
+            this.isRefreshing = false;
+            this.handleLogout();
+            return Promise.reject(refreshError);
           }
         }
 
@@ -73,6 +118,75 @@ class ApiService {
         return Promise.reject(apiError);
       }
     );
+  }
+
+  // Refresh access token
+  private async refreshAccessToken(): Promise<string> {
+    try {
+      const refreshToken = store.getState().auth.refreshToken || getCookie("refresh-token");
+
+      if (!refreshToken) {
+        throw new Error("No refresh token available");
+      }
+
+      const response = await this.client.post<{
+        status: number;
+        success: boolean;
+        message: string;
+        data: {
+          accessToken: string;
+          refreshToken: string;
+          user: {
+            userId: string;
+            email: string;
+            fullName: string;
+            roleName: string;
+          };
+        };
+      }>("/auth/refresh-token", { refreshToken });
+
+      if (response.data.success && response.data.data.accessToken) {
+        const { accessToken, refreshToken: newRefreshToken, user } = response.data.data;
+
+        // Lưu tokens vào cookie
+        setCookie("auth-token", accessToken, { maxAge: 7 * 24 * 60 * 60, path: "/" });
+        setCookie("refresh-token", newRefreshToken, { maxAge: 30 * 24 * 60 * 60, path: "/" });
+
+        // Cập nhật Redux store
+        store.dispatch(
+          setCredentials({
+            token: accessToken,
+            refreshToken: newRefreshToken,
+            user: {
+              id: user.userId,
+              email: user.email,
+              name: user.fullName,
+              role: user.roleName,
+            },
+          })
+        );
+
+        return accessToken;
+      }
+
+      throw new Error("Refresh token failed");
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // Handle logout
+  private handleLogout() {
+    deleteCookie("auth-token", { path: "/" });
+    deleteCookie("refresh-token", { path: "/" });
+    store.dispatch(logout());
+
+    // Dispatch logout event for other tabs/windows
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("logout"));
+      // Redirect to login page
+      window.location.href = "/login";
+    }
   }
 
   // Set auth token manually (for initial sync)
