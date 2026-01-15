@@ -2,14 +2,14 @@
 
 import { ReduxProvider } from "./reduxProvider";
 import { QueryProvider } from "./queryProvider";
-import { Toaster } from "sonner";
+import { Toaster } from "@/components/ui";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ReduxProvider>
       <QueryProvider>
         {children}
-        <Toaster position="top-right" expand={true} richColors closeButton />
+        <Toaster />
       </QueryProvider>
     </ReduxProvider>
   );
