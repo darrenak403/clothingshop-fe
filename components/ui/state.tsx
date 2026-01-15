@@ -65,8 +65,8 @@ function LoadingSkeleton({
   ...props
 }: React.HTMLAttributes<HTMLDivElement> & { propertyCount?: number }) {
   return (
-    <div className={cn("min-h-screen bg-gray-50", className)} {...props}>
-      <div className="container mx-auto py-8 space-y-8">
+    <div className={cn("min-h-screen bg-gray-50 p-8", className)} {...props}>
+      <div className="container mx-auto space-y-8">
         <div className="flex items-center justify-between">
           <Skeleton className="h-8 w-48" />
           <Skeleton className="h-10 w-32" />

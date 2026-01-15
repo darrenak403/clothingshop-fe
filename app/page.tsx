@@ -1,7 +1,17 @@
+"use client";
 import Image from "next/image";
 import styles from "./page.module.css";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useState } from "react";
 
 export default function Home() {
+  const [selectValue, setSelectValue] = useState("");
   return (
     <div className={styles.page}>
       <main className={styles.main}>
@@ -59,6 +69,18 @@ export default function Home() {
           >
             Documentation
           </a>
+        </div>
+        <div>
+          <Select value={selectValue} onValueChange={setSelectValue}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select an option" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="option1">Option 1</SelectItem>
+              <SelectItem value="option2">Option 2</SelectItem>
+              <SelectItem value="option3">Option 3</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </main>
     </div>
