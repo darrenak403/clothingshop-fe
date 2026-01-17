@@ -19,6 +19,10 @@ const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const { login, isLoggingIn } = useAuth();
 
+  // Get saved email from localStorage
+  const savedEmail =
+    typeof window !== "undefined" ? localStorage.getItem("lastRegisteredEmail") || "" : "";
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-background">
       <Card className="w-full max-w-md">
@@ -30,7 +34,7 @@ const SignIn = () => {
         </CardHeader>
         <CardContent>
           <Formik
-            initialValues={{ email: "", password: "" }}
+            initialValues={{ email: savedEmail, password: "" }}
             validationSchema={SignInSchema}
             onSubmit={(values) => {
               login(values);
@@ -40,20 +44,36 @@ const SignIn = () => {
               <Form className="space-y-4">
                 <div>
                   <Label htmlFor="email">Email</Label>
-                  <Field
-                    as={Input}
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="Enter your email"
-                  />
+                  <div className="relative">
+                    <Field
+                      as={Input}
+                      id="email"
+                      name="email"
+                      type="email"
+                      placeholder="Enter your email"
+                    />
+                    {savedEmail && (
+                      <Icon
+                        icon="mdi:close"
+                        className="absolute right-3 top-3 cursor-pointer text-muted-foreground hover:text-destructive"
+                        onClick={() => {
+                          localStorage.removeItem("lastRegisteredEmail");
+                          // Reset form field
+                          const formik = document.querySelector("form") as HTMLFormElement;
+                          if (formik) {
+                            formik.email.value = "";
+                          }
+                        }}
+                      />
+                    )}
+                  </div>
                   <ErrorMessage
                     name="email"
                     component="div"
                     className="text-sm text-destructive mt-1"
                   />
                 </div>
-                <div className="relative">
+                <div className="relative mb-8">
                   <Label htmlFor="password">Password</Label>
                   <Field
                     as={Input}
@@ -72,7 +92,7 @@ const SignIn = () => {
                     component="div"
                     className="text-sm text-destructive mt-1"
                   />
-                  <div className="absolute bottom-[-8px] right-0">
+                  <div className="absolute -bottom-7 right-2">
                     <Link
                       href="/forgot-password"
                       className="text-sm text-muted-foreground hover:text-primary"

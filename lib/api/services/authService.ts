@@ -33,9 +33,11 @@ export interface AuthResponse {
     accessToken: string;
     refreshToken: string;
     user: {
-      id: string;
+      userId: string;
       email: string;
       fullName: string;
+      phoneNumber?: string;
+      roleName: string;
     };
   };
 }

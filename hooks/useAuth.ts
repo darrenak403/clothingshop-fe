@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { useSelector, useDispatch } from "react-redux";
@@ -21,16 +22,18 @@ export function useAuth() {
   // Register mutation
   const registerMutation = useMutation({
     mutationFn: (data: RegisterRequest) => authService.register(data),
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
       if (data.success) {
+        // Save email to localStorage for convenience
+        localStorage.setItem("lastRegisteredEmail", variables.email);
         toast.success("Đăng ký thành công! Vui lòng đăng nhập");
         router.push("/sign-in");
       } else {
-        toast.error(data.message || "Đăng ký thất bại");
+        // Error toast handled by API interceptor
       }
     },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Đăng ký thất bại");
+    onError: () => {
+      // Error toast handled by API interceptor
     },
   });
 
@@ -43,10 +46,10 @@ export function useAuth() {
         dispatch(
           setCredentials({
             user: {
-              id: data.data.user.id,
+              id: data.data.user.userId,
               email: data.data.user.email,
               name: data.data.user.fullName,
-              role: "user", // Default role
+              role: data.data.user.roleName,
             },
             token: data.data.accessToken,
             refreshToken: data.data.refreshToken,
@@ -54,13 +57,24 @@ export function useAuth() {
         );
 
         toast.success("Đăng nhập thành công");
-        router.push("/");
+
+        // Redirect based on role
+        switch (data.data.user.roleName) {
+          case "Admin":
+            router.push("/admin/dashboard");
+            break;
+          case "Staff":
+            router.push("/staff/dashboard");
+            break;
+          default:
+            router.push("/");
+        }
       } else {
-        toast.error(data.message || "Đăng nhập thất bại");
+        // Error toast handled by API interceptor
       }
     },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Đăng nhập thất bại");
+    onError: () => {
+      // Error toast handled by API interceptor
     },
   });
 
@@ -74,13 +88,13 @@ export function useAuth() {
         toast.success("Đăng xuất thành công");
         router.push("/sign-in");
       } else {
-        toast.error(data.message || "Đăng xuất thất bại");
+        // Error toast handled by API interceptor
       }
     },
     onError: (error: any) => {
       // Still clear Redux state even if API call fails
+      // Note: Toast is handled by API interceptor
       dispatch(logoutAction());
-      toast.error("Đăng xuất thành công");
       router.push("/sign-in");
     },
   });
@@ -94,10 +108,10 @@ export function useAuth() {
         dispatch(
           setCredentials({
             user: {
-              id: data.data.user.id,
+              id: data.data.user.userId,
               email: data.data.user.email,
               name: data.data.user.fullName,
-              role: "user", // Default role
+              role: data.data.user.roleName,
             },
             token: data.data.accessToken,
             refreshToken: data.data.refreshToken,
@@ -105,8 +119,9 @@ export function useAuth() {
         );
       }
     },
-    onError: () => {
+    onError: (error: any) => {
       // Token refresh failed, clear Redux state and redirect to login
+      // Note: Toast is handled by API interceptor
       dispatch(logoutAction());
       router.push("/sign-in");
     },
@@ -119,11 +134,11 @@ export function useAuth() {
       if (data.success) {
         toast.success("Email đặt lại mật khẩu đã được gửi!");
       } else {
-        toast.error(data.message || "Gửi email thất bại");
+        // Error toast handled by API interceptor
       }
     },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Gửi email thất bại");
+    onError: () => {
+      // Error toast handled by API interceptor
     },
   });
 
@@ -135,11 +150,11 @@ export function useAuth() {
         toast.success("Mật khẩu đã được đặt lại thành công!");
         router.push("/sign-in");
       } else {
-        toast.error(data.message || "Đặt lại mật khẩu thất bại");
+        // Error toast handled by API interceptor
       }
     },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Đặt lại mật khẩu thất bại");
+    onError: () => {
+      // Error toast handled by API interceptor
     },
   });
 

@@ -3,6 +3,7 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import { store } from "@/lib/redux/store";
 import { logout, setCredentials } from "@/lib/redux/slices/authSlice";
+import { toast } from "sonner";
 
 export interface ApiError {
   code?: number;
@@ -60,60 +61,94 @@ class ApiService {
 
         // Handle 401 Unauthorized - Token expired or invalid
         if (error.response?.status === 401 && !originalRequest._retry) {
-          // Nếu request là refresh-token thì không retry
-          if (originalRequest.url?.includes("/auth/refresh-token")) {
-            this.handleLogout();
-            return Promise.reject(error);
-          }
+          // Skip refresh logic for login, register, and refresh-token requests
+          if (
+            originalRequest.url?.includes("/auth/login") ||
+            originalRequest.url?.includes("/auth/register") ||
+            originalRequest.url?.includes("/auth/refresh-token")
+          ) {
+            // For auth endpoints, don't retry - just show error
+          } else {
+            originalRequest._retry = true;
 
-          originalRequest._retry = true;
-
-          // Nếu đang refresh token, đợi kết quả
-          if (this.isRefreshing) {
-            return new Promise((resolve, reject) => {
-              this.refreshQueue.push({ resolve, reject });
-            })
-              .then((token) => {
-                originalRequest.headers.Authorization = `Bearer ${token}`;
-                return this.client(originalRequest);
+            // Nếu đang refresh token, đợi kết quả
+            if (this.isRefreshing) {
+              return new Promise((resolve, reject) => {
+                this.refreshQueue.push({ resolve, reject });
               })
-              .catch((err) => {
-                return Promise.reject(err);
-              });
-          }
+                .then((token) => {
+                  originalRequest.headers.Authorization = `Bearer ${token}`;
+                  return this.client(originalRequest);
+                })
+                .catch((err) => {
+                  return Promise.reject(err);
+                });
+            }
 
-          this.isRefreshing = true;
+            this.isRefreshing = true;
 
-          try {
-            const newToken = await this.refreshAccessToken();
+            try {
+              const newToken = await this.refreshAccessToken();
 
-            // Update token cho request hiện tại
-            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+              // Update token cho request hiện tại
+              originalRequest.headers.Authorization = `Bearer ${newToken}`;
 
-            // Xử lý tất cả requests đang đợi
-            this.refreshQueue.forEach(({ resolve }) => resolve(newToken));
-            this.refreshQueue = [];
-            this.isRefreshing = false;
+              // Xử lý tất cả requests đang đợi
+              this.refreshQueue.forEach(({ resolve }) => resolve(newToken));
+              this.refreshQueue = [];
+              this.isRefreshing = false;
 
-            // Retry request ban đầu
-            return this.client(originalRequest);
-          } catch (refreshError) {
-            // Refresh thất bại -> Logout user
-            this.refreshQueue.forEach(({ reject }) => reject(refreshError));
-            this.refreshQueue = [];
-            this.isRefreshing = false;
-            this.handleLogout();
-            return Promise.reject(refreshError);
+              // Retry request ban đầu
+              return this.client(originalRequest);
+            } catch (refreshError) {
+              // Refresh thất bại -> Logout user
+              this.refreshQueue.forEach(({ reject }) => reject(refreshError));
+              this.refreshQueue = [];
+              this.isRefreshing = false;
+              this.handleLogout();
+              return Promise.reject(refreshError);
+            }
           }
         }
 
         // Standardize error format
         const apiError: ApiError = {
           code: error.response?.status,
-          message: error.response?.data?.message || error.message || "Có lỗi xảy ra",
+          message:
+            error.response?.data?.errors ||
+            error.response?.data?.message ||
+            error.message ||
+            "Có lỗi xảy ra",
           status: false,
           data: error.response?.data,
         };
+
+        // Show toast for different error types
+        if (error.response?.status === 401) {
+          if (originalRequest.url?.includes("/auth/login")) {
+            // For login errors, show the specific message from backend
+            const errorMessage = apiError.message;
+            toast.error(errorMessage || "Đăng nhập thất bại");
+          } else {
+            toast.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+          }
+        } else if (error.response?.status === 403) {
+          if (originalRequest.url?.includes("/auth/login")) {
+            // Account locked message
+            const errorMessage = apiError.message;
+            toast.error(errorMessage || "Tài khoản bị khóa");
+          } else {
+            toast.error("Bạn không có quyền truy cập chức năng này.");
+          }
+        } else if (error.response?.status >= 500) {
+          toast.error("Lỗi máy chủ. Vui lòng thử lại sau.");
+        } else if (error.response?.status >= 400) {
+          // Client errors - show specific message if available
+          const errorMessage = apiError.message;
+          if (errorMessage && errorMessage !== "Có lỗi xảy ra") {
+            toast.error(errorMessage);
+          }
+        }
 
         return Promise.reject(apiError);
       }
@@ -181,11 +216,14 @@ class ApiService {
     deleteCookie("refresh-token", { path: "/" });
     store.dispatch(logout());
 
+    // Show logout toast
+    toast.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+
     // Dispatch logout event for other tabs/windows
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("logout"));
       // Redirect to login page
-      window.location.href = "/login";
+      window.location.href = "/sign-in";
     }
   }
 
